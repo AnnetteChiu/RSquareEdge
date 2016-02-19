@@ -1,0 +1,679 @@
+---
+title: "Containers"
+output: ioslides_presentation
+---
+
+## Containers for data
+
+R billed itself as having "an effective data handling and storage facility."  
+
+What would handling data mean? In  real work data comes in data sets. These can be univariate, bivariate, multivariate, heirarchical, ... Different types of data means different storage types will be necessary.
+
+----
+
+We will discuss the following basic types (from [Wickham](http://adv-r.had.co.nz/Data-structures.html)):
+
+ .     Homogeneous      Heterogeneous
+----   -----------      ------------
+1d     (atomic vector)  list
+2d     matrix           data frame
+$n$d   array            .
+
+
+
+
+## Vectors
+
+In R the difference between a (scalar) number and a vector is nothing (as there are no scalar values), but by presenting vectors as a container, we can naturally introduce other containers.
+
+What is a vector?
+
+> A vector is a container holding n items all of the same type. The items or ordered using 1-based indexing. Vectors may be constructed by combining them with the `c` function
+
+----
+
+Vectors can be numeric, logical, character:
+
+```{r}
+c(1, 2, 3)
+c(TRUE, FALSE, TRUE)
+c("one", "two", "three")
+```
+
+----
+
+Or even other types
+
+```{r}
+require(lubridate)
+now() + weeks(c(1,2,3,4))
+```
+
+----
+
+Vectors must consist of elements all of the same type. If we try to construct one of a different type, the values will be coerced:
+
+```{r}
+c(TRUE, 0, 1)          # TRUE -> 1 (FALSE -> 0)
+c("one", 2, 3.0)       # all coerced to character
+c(now(), 10)           # 10 becomes time 10 minutes after starting point
+```
+
+## Length of vectors
+
+Vectors have a length:
+
+```{r}
+x <- c(1, 1, 2, 3, 5)
+length(x)
+```
+
+Vectors can be 0 length, but they aren't constructed this way:
+
+```{r}
+c()
+```
+
+Rather a type must be specified:
+
+```{r}
+numeric(0)
+```
+
+More generally `numeric(10)` will produce a vector of length 10 with default values.
+
+
+## Vector attributes, Names
+
+Vectors can have attributes. A common one is to give names:
+
+```{r}
+x <- c("one"= 1, "two" = 2, "three" = 3)
+x
+names(x)
+```
+
+These values can be changed:
+
+```{r}
+names(x) <- toupper(names(x))
+```
+
+(This uses `names` on *both* sides...)
+
+### Basic indexing
+
+As mentioned, vectors have their components in an order. We use indexing to get them. The `[]` notation is for indexing.
+
+The easiest use is to grab one value:
+
+```{r}
+x[3]    # third item
+```
+
+More than one can be accessed
+
+```{r}
+x[c(1,3)]
+```
+
+## Index by names -- not just indices
+
+We can index by the names when a vector has names:
+
+```{r}
+x["one"]
+```
+
+## Index by logical vectors
+
+We can even access by logical indices:
+
+```{r}
+x[c(TRUE, FALSE, TRUE)]
+```
+
+This can work with logical operators. The following identifies odd values of `x`:
+
+```{r}
+x[ x %% 2 == 1]
+```
+
+----
+
+Assignment can be to an index
+
+```{r}
+x[ x %% 2 == 1] = NA          # odd ones get NA value
+x
+```
+
+## "vectorized" operations
+
+Let's look at two formulas from descriptive statistics
+
+The sample mean:
+
+$$
+\bar{x} = \frac{x_1 + x_2 + \cdots + x_n}{n}.
+$$
+
+and the sample variance:
+
+$$
+s^2 = \frac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{n-1}.
+$$
+
+## Descriptive
+
+In words the sample mean is:
+
+> add the values and divide by their number
+
+And the sample standard deviation is:
+
+> center the variables, add their squares, divide by their number minus 1.
+
+The phrasing works on the set of values at once, whereas the formulas spell out the thing to do to each value.
+
+What is easier to think about?
+
+----
+
+R has vectorization that allows us to think of an entire data set at once. There are two things we want to do. 
+
+* Reduce the values to a number (the sum, their number). Visually:
+
+```
+[x1 x2 ... xn] -> y
+```
+
+* Do something to each of the numbers (subtract the mean to center, square them, ...) Visually:
+
+```
+[x1 x2 ... xn] -> [f(x1) f(x2) ... f(xn)]
+```
+
+---- 
+
+We see that built into R are these features.
+
+First some reductions:
+
+```{r}
+x <- c(1,1,2,3,5,8,13)
+sum(x)     # x1 + x2 + ... + xn
+length(x)  # n
+mean(x)    # basically sum(x) / length(x)
+```
+
+----
+
+And some operations on all the numbers:
+
+```{r}
+x - mean(x)
+(x - mean(x))^2
+(x - mean(x)) / sd(x)
+```
+
+----
+
+Vectorization is pervasive throughout R. Conceptually this approach can offer benefits. It makes code more [declarative](https://en.wikipedia.org/wiki/Declarative_programming) and less *imperative*.
+
+
+
+There are also equally important technical reasons, as vectorized code often runs faster as more work can be done in the underlying C code.
+
+## generating vectors
+
+It is fairly common to need an arithmatic sequence of values:
+
+$$
+a, a + h, a + 2h, a + 3h, \dots, a + nh
+$$
+
+R makes this easy with two functions: the colon, which generates a squence when $h=1$ and `seq`:
+
+```{r}
+1:10
+10:1
+seq(1, 10, by=2)
+```
+
+----
+
+With these, we can derive other sequences:
+
+
+```{r}
+2^(1:5)  # powers of 2
+10^(-(1:5))  # decreasing powers of 10. (Is second () necessary?)
+```
+
+----
+
+As an aside, for more complicated expressions, we might need to resort to a for loop: For example, the fibonacci sequence:
+
+```{r}
+fib <- c(1,1)
+for (i in 3:10) {
+  fib[i] = fib[i-1] + fib[i-2]
+}
+fib
+```
+  
+## Matrices and Arrays
+
+A billing point of R was
+
+> a suite of operators for calculations on arrays, in particular matrices
+
+A matrix, like a vector, is a homogeneous collection of values. They are viewed as a rectangular, two-dimensional array. Arrays are their higher-dimensional counterpart.
+
+Matrices are widely used mathematical objects and have their own algebraic properties.
+
+In R matrices can also be used as containers for storing data.
+
+
+
+----
+
+Consider a class of 100 students. Some did and didn't do their HW, some did and didn't pass. The distribution can be put into a table:
+
+HW \\ pass  Passed Failed
+----------  ------ ------
+Yes           50     10
+No            20     20
+
+
+----
+
+These numbers are naturally arranged in a two dimensional array of numbers -- matrix. In R the `matrix` function can do so:
+
+```{r}
+grades <- matrix(c(50,20, 10, 20), nrow=2)
+grades
+```
+
+The above starts with a vector and creates a matrix object. The argument `nrows=2` specifies the "shape" of the matrix, as the number of columns can be inferred.
+
+The way the matrix is filled is column by column, unless specified otherwise. Column by column matches how the numbers are stored internally. 
+
+## A reshaped vector
+
+A matrix (or an array) is nothing more than a reshaped vector. Internally, R uses a vector to store the data. So, we can access the underlying elements just like a vector:
+
+```{r}
+grades[1:4]
+length(grades)
+```
+
+---- 
+
+But this isn't the most convenient. We would like to access the numbers by a specification of both row and column.
+
+```{r}
+dim(grades)
+```
+
+----
+
+The `[]` notation allows for more than one "index" to be specified. For a matrix, there are two. The row reference comes first, then the column. So to get the "10" out of `grades` we would have:
+
+```{r}
+grades[1, 2]
+```
+
+We can leave an entry blank and get back all the values:
+
+```{r}
+grades[1, ]
+```
+
+----
+
+These can be profitably combined, say, to compute the pass rate for students who did not do their HW:
+
+```{r}
+grades[1,2] / sum(grades[1, ])
+```
+
+## Attributes: row and column names
+
+Matrices can have row and column names. Intead of `names`, we have `rownames` and `colnames`. For example, here we set them:
+
+```{r}
+rownames(grades) <- c("Did HW", "Did not do HW")
+colnames(grades) <- c("Passed", "Failed")
+grades
+```
+
+As with vectors, we can index by names:
+
+```{r}
+grades["Did not do HW", "Failed"]
+````
+
+----
+
+We can even add names along the dimensions:
+
+```{r}
+dimnames(grades) <- list(
+  "HW"=c("Did HW", "Did not do HW"),
+  "Grades"=c("Passed", "Failed"))
+grades
+```
+
+Are these  respected by subsetting?
+
+```{r}
+grades[1,2]
+grades[1,]
+```
+
+----
+
+It would appear not. But in fact they are. The issue here is the R will drop dimensions on the returned object. So each of the above is a vector, for which only names makes sense, not names along dimensions. One can explicitly request no dimensions be dropped:
+
+```{r}
+grades[1,2, drop=FALSE]
+```
+
+This is pointed out as it highlights design choices. For interactive use, dropping dimensions is typically desirable. For programming, that needn't be the case (as it leads to having to check for different cases).
+
+## Tables
+
+As seen tables are a useful application of matrices beyond the mathematical sense. While we are here, we mention that there are two common table making functions: `table` and `xtabs`. The table command takes two vectors:
+
+```{r}
+gender <- c("male", "male", "male", "female", "female")
+background <- c("humanities", "humanities", "STEM", "STEM","humanities")
+table(gender, background)
+```
+
+(`xtabs` is easier to describe after we talk about data frames.)
+
+
+## Lists
+
+A list is a generalized vector:
+
+* like a vector it is an indexed container for components
+* like a vector these components can be named
+* **unlike** a vector the components can be *heterogeneous*
+
+## Lists: construction
+
+List are constructed with the `list` operator:
+
+```{r]
+list(1,2,3)
+list(a=1, b=2, c=3)
+```
+
+The latter adds names at the time of construction. The `names` function can also add or modify names later.
+
+## Lists: indexing
+
+The vector notation can retrieve components of a list:
+
+```{r}
+l <- list(a=1, b=2+0i, c="three")
+l[3]
+```
+
+What's up with the `$c` bit?
+
+----
+
+The return value is a list with the one component. This allow vectorized indexing:
+
+```{r}
+l[1:2]
+```
+
+----
+
+How to access the underlying components? For that the `[[` operator is defined:
+
+```{r}
+l[[3]]    # by index
+l[["a"]]  # by name
+l$b       # short cut for l[["b"]].
+```
+
+Moral: `[` to return a list, `[[` to get a component.
+
+----
+
+How to remove a component? Set a component to `NULL`:
+
+```{r}
+l$c <- NULL
+l
+```
+
+----
+
+How to add a component? Assign to it: 
+
+```{r}
+l[[4]] <- "Four"
+l
+```
+
+(Notice the hole for the third component is filled by `NULL`. A bit odd, as `NULL` will remove the value. but present, but assigning via `l[[3]] <- l[[3]]` will remove it.)
+
+## Lists as return values
+
+Lists are workhorse in R. They play the role of tuples and dictionaries in other languages. They are often used as the return values of functions, especially the statistical modeling functions. One place we say them earlier was in `strsplit`. 
+
+```{r}
+qwerty <- "the quick brown fox jumped over the lazy dog"
+lincoln <- "four square and seven years ago"
+strsplit(c(qwerty, lincoln), " ")
+```
+
+----
+
+```{r}
+m <- lm(mpg ~ wt, mtcars)
+str(m)
+```
+
+## Lists: Recursive
+
+Lists are known as recursive data structures, as their components can also be lists. An example is the output above. The model fit uses a linear algebra call, `qr` whose output is a list with some diagnostic values. Hence, this makes sense:
+
+```{r}
+m$qr$pivot     # pivot columns of `qr` algorithm used
+```
+
+
+
+
+## Data Frames
+
+Okay, a vector is a natural way to store a *univariate* data set.
+What about a *multivariate* data set? Our scenario:
+
+> For serveral different cases we record values for $n$ different variables:
+
+Case      Role     Gender   IQ
+----      ----     ------   ----
+Homer     Husband  male     100
+Marge     Wife     female   110
+Bart      Son      male     120
+Lisa      Daughter female   160
+
+We have variables Role, Gender and IQ which are not homogeneous.
+
+
+----
+
+We could put these into a list:
+
+```{r}
+role <- c("husband", "wife", "son", "daughter")
+gender <- c("male", "female", "male", "female")
+IQ <- c(100, 110, 120, 160)
+l <- list(role=role, gender=gender, IQ=IQ) # add names
+```
+
+----
+
+But lists lose some of the information. In this case, the vectors in the list are all of the same length, as there is one measurement per case. Hence a table is appropriate. We could try to put them into a matrix:
+
+```{r}
+matrix(c(role, gender, IQ), nrow=4)
+```
+
+But the numeric values get coerced to character as matrices are homogeneous.
+
+## Data frames
+
+Enter the data frame: It is a shaped list with properties of both a list and a matrix. 
+
+```{r}
+simpsons <- data.frame(role=role, gender=gender, IQ=IQ)
+simpsons
+```
+
+## Data frames: Row and column names
+
+A data frame is a list, so its components (the variables) can have `names`. The `colnames` function can set them. (As can `names`.) In the above, they are set when we call `data.frame`. Column names need not be unique, but that is suggested.
+
+A data frame is a list of variable each having the same of cases **and** unique row names. The default, as seen above, is the row index (as a character):
+
+```{r}
+rownames(simpsons)
+```
+
+----
+
+We can set the row names with `rownames`:
+
+```{r}
+rownames(simpsons) <- c("Homer", "Marge", "Bart", "Lisa")
+simpsons
+```
+
+
+## Data frames: indexing like a matrix
+
+As with matrices we can index as a matrix:
+
+```{r}
+simpsons[1,"role"] # a factor
+simpsons[, 3]      # a vector. Use `drop=FALSE` o/w
+simpsons[1:2, ]    # a data frame
+```
+
+## Data frames:  indexing as a list
+
+Data frames also have list-like indexing.
+
+```{r]
+simpsons[["IQ"]]
+simpsons["IQ"]
+```
+
+----
+
+This is used quite often when indexing by logical vectors:
+
+```
+simpsons[simpsons$IQ >= 120, ]
+```
+
+This is called "filtering" a topic we will revisit.
+
+## Data frames: other means of construction
+
+While data frames can be constructed, it is common to read them into R. There are many functions in R for reading external files. The `read.csv` file is one. Here we see it used to read in a file from the internet:
+
+```{r}
+wl <- read.csv("http://wiener.math.csi.cuny.edu/verzani/tmp/weightlift.csv", skip=1)  # skip first row of file
+head(wl, n=3)   # first 3 rows
+```
+
+
+## Data frames: factors
+
+Conversions to data frames usually transform character vectors into factors. In the weightloss data frame, this is the case. Here there is no advantage to using a factor, and even worse, it can be tedious. 
+There are ways to avoid the conversion. The `read.csv` function has this argument:
+
+```
+stringsAsFactors = default.stringsAsFactors()
+```
+
+The default is generally `TRUE`. It can be set to `FALSE` to suppress this.
+
+----
+
+After the fact, conversion can happen. For example by reassigning:
+
+```{r}
+simpsons$gender <- as.character(simpsons$gender)
+simpsons[1,2] <- "All male"   # ok
+simpsons[1,1] <- "Comedic bufoon"  ## error, not a level
+simpsons
+```
+
+## Data frames: variable look up
+
+Suppose we take the weightloss data and want to create a derived variable: twocie the amount of the `snatch` plus the `clean and jerk` divided by the logarithm of the `w.class`. Here is one way to do so:
+
+```{r}
+var <- (2 * wl$snatch + wl$clean_jerk) / wl$w.class
+```
+
+There is something tedious of having to reference the variable within the data frames, as it requires three times writing `wl$`. 
+
+----
+
+This is a draw back to data frames. To work around this, there are several ways to avoid it:
+
+* R's modeling functions allow the specification a data set to look variables up within (`data=wl`, say)
+
+* The `with` (and `within` functions) temporarily attach a data frame to the search space:
+
+```{r}
+var <- with(wl, (2*snatch + clean_jerk) / w.class)
+```             
+
+## Other data structures
+
+R has other data structures. One example is that produced by scraping a web page. Here we borrow an example from `rvest`:
+
+```{r}
+library(rvest)
+lego_movie <- read_html("http://www.imdb.com/title/tt1490017/")
+```
+
+The `lego_movie` structure isn't really a list, but rather a object to be queried through various functions. These require some underlying knowledge of the HTML page. 
+
+----
+
+For example, to find the rating, we have:
+
+```{r}
+lego_movie %>%
+  html_nodes("strong span") %>%
+    html_text() %>%
+      as.numeric()    
+``` 
+
+(The first command queries, `lego_movie` and returns all elements matching `strong span`. It turns out there is only 1 here.)
+
+---- 
+
+To grab the cast, takes even more know-how of how the page is assembled. Here there are several values returned. The functions are "vectorized":
+
+```{r}
+lego_movie %>%
+    html_nodes("#titleCast .itemprop span") %>%
+      html_text()
+```

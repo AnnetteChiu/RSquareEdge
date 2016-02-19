@@ -1,0 +1,479 @@
+---
+title: "Types of Data"
+output: ioslides_presentation
+---
+
+## An analogy from math
+
+In math we have various types of numbers. familiar ones are:
+
+* The integers: $\dots, -2, -1, 0, 1, 2, \dots$
+* The rational numbers: $p/q$ where both $p$ and $q$ are integers, $q \neq 0$.
+* the real numbers: all numbers between $(-\infty, \infty)$
+* The infinite numbers such as $\infty$.
+* the complex numbers: all values $x + yi$ where $x$ and $y$ are real numbers and $i=\sqrt{-1}$.
+
+----
+
+In math, we can recongnize the needs of such numbers as they come into play when trying to solve equations or do operations:
+
+* Rational numbers are needed to solve something like $5x = 2$.
+* real numbers are needed to solve something like $x^2 = 2$
+* infinite numbers are needed to discuss arbitrarily large 
+* complex numbers are needed to solve something like $x^2 + 2 =0$.
+
+## Numbers in R
+
+With computers we have a primary numeric type: *floating point*
+
+Floating point numbers are a [leaky abstraction](http://www.johndcook.com/blog/2009/04/06/numbers-are-a-leaky-abstraction/) of the real numbers.
+
+Floating point numbers are represented in binary with three values:
+
+* a sign (plus or minus)
+* a number (significand) interpreted as a value between $[1,2)$
+* an exponent
+
+These are put together as `-1.11001 * 2^(3)`.
+
+
+----
+
+Why are is this leaky:
+
+* the significand can only represent so many different values. In 64-bit, there are $2^{53}$, or about:
+
+```{r}
+2^53
+```
+
+A lot -- but not infinite. This means there are "gaps" between the numbers that can be represented. Near 1, these gaps are about $10^{-16}$.
+
+----
+
+These gaps can appear in simple statements:
+
+```{r}
+(.1 + .2) - .3
+```
+
+* The exponent can only be so big. But big enough to represent numbers as bit as $10^{300}$ and as small as $10^{-300}$, so pretty big and small.
+
+----
+
+In R, most all numbers created are floating point values internally. How they display can make them look like integers:
+
+```{r}
+1.00000000000000
+```
+
+R assigns a class to these numbers, `numeric`:
+
+```{r}
+class(1)
+```
+
+This is not the storage type though, which is found with
+
+```{r}
+typeof(1)
+```
+
+
+----
+
+R has a type for integers and way to create them, but they are not widely used outside of programming purposes:
+
+```{r}
+class(1L)
+```
+
+Integers are exact, but limited. They can have faster math defined for them and have some other advantages, but that isn't our concern.
+
+----
+
+R has no built-in type for rational numbers. Rationals, are just floating point numbers:
+
+```{r}
+1/2
+```
+
+This means rational numbers aren't *exact* either
+
+```{r}
+1/10 + 2/10 - 3/10
+```
+
+-----
+
+R has a means to represent complex numbers:
+
+```{r}
+2 + 3i  # also more cumbersomely: complex(1, 2, 3)
+```
+
+-----
+
+If all we wanted to discuss here was numeric data, we would not have much more to say about types. Unless your data is unusual, R will store it as floating point numbers. (Well, not really. When R interfaces with other systems it must be able to interact with a myriad of different representations.)
+
+The mathematical operations are predictable:
+
+```{r}
+1 + 2 * 3 / 4 ^ 5
+```
+
+Basic functions are called as they would appear in a math book:
+
+```
+sin(pi/2)
+```
+
+----
+
+The value `pi` is one of a few built-in constants. The number `e` is not one of them. For that, the function `exp(1)` can be used.
+
+Not mentioned, but part of floating point, are the value plus or minus infinity: `Inf` (an answer to `1/0`) and `NaN` for "not a number" which is a way to signal an error without stopping a program. (Generated, for example, by `0/0`.)
+
+## Logical values
+
+In computer programming, Boolean values are commonly used. R has the values `TRUE` and `FALSE`.
+
+```{r}
+TRUE
+```
+
+These are often generated as answers to questions comprised of logical operators:
+
+```{r}
+x  = 1
+x > 0
+```
+
+----
+
+The "algebra" of Boolean values is implemented by `&` (and) and `|` (or):
+
+```{r}
+TRUE & FALSE
+TRUE | FALSE
+```
+
+
+## Dates and times
+
+R has built-in classes for storing dates and times. As well, their are other external packages, such as `lubridate`, to facilitate this.
+
+The `POSIXct` class represents the (signed) number of seconds since the beginning of 1970 (in the UTC time zone) as a number vector (`?POSIXct`):
+
+```{r}
+now <- Sys.time()
+now
+```
+
+----
+
+Arithmetic is possible, as with:
+
+```{r}
+now - 60*60 # an hour ago
+```
+
+----
+
+The `POSIXlt` class stores values in list. It may print the same way, but it allows some underlying access:
+
+```{r}
+a <- as.POSIXlt(now)
+a
+```
+
+```{r}
+a$mday  # day of month
+```
+
+Time is pretty complicated when timezones, leap seconds, leap years, ... are included. The manual page is informative
+
+
+## Lubridate
+
+The [lubridate](https://github.com/hadley/lubridate) package can make working with time data fairly intuitive. Assuming it is installed, we load it with:
+
+```{r}
+require(lubridate)
+```
+
+With this we can create time/date values easily enough:
+
+```{r}
+now()
+```
+----
+
+Or using one of the constructors, such as `ymd` or `ymd_hms`
+
+```{r}
+today <- ymd("2016-02-19")
+today
+today_start <- ymd_hms("2016-02-19 13:00:00", tz = "EST") # OlsonNames()
+today_start
+```
+
+----
+
+These constructors are smart about leap years:
+
+```{r}
+ymd("2016-02-29")
+ymd("2017-02-29")
+```
+
+----
+
+We can manipulate times with natural idioms:
+
+```{r}
+today_start + weeks(1)  # next week's start 
+```
+
+There is more to say, but not here....
+
+## Character values
+
+Historically data in the social sciences was classified as one of "nominal", "ordinal", "interval", or "ratio". The distinctions can be read [here](https://en.wikipedia.org/wiki/Level_of_measurement). 
+
+For "nominal", we have
+
+> The nominal type differentiates between items or subjects based only on their names or (meta-)categories and other qualitative classifications they belong to; thus dichotomous data involves the construction of classifications as well as the classification of items. Discovery of an exception to a classification can be viewed as progress. Numbers may be used to represent the variables but the numbers do not have numerical value or relationship.
+
+----
+
+We do see numbers representing such categories frequently. The Census bureau values typically encode different categorical responses using numbers.
+
+More human-friendly is to use names for such data. R has two different ways to store such data, this distinction might help:
+
+* descriptive data is best stored in free-form test
+* categorizing data is best stored in a limited set of options. 
+
+When enterind data in excel, we see this in action with auto-fill turned on.
+
+----
+
+Character data in R is formed by using matching single or double quotes.
+
+```{r}
+qwerty <- "the quick brown fox jumped over the lazy dog"
+lincoln <- "four score and seven years ago..."
+````
+
+Character data can be encoded to accommodate other languages. This topic can be involved, but is necessary for many uses. Here we assume ASCII encoding are used.
+
+----
+
+There are a number of functions that manipulate character data:
+
+```{r}
+toupper(qwerty)  # also tolower
+chartr("q", "Q", qwerty) # more fine-grained translation (never used before!)
+substr(qwerty, 5,9)  # take substrings
+```
+
+----
+
+Strings can be split up with `strsplit`:
+
+```
+strsplit(qwerty, " ")
+```
+
+(The otupt is a bit confusing for now.)
+
+----
+
+Strings can be combined. It is a bit cumbersome in R compared to other languages. The `paste` command can be used:
+
+```{r}
+paste("the", "quick", "brown", "fox")
+```
+
+`paste` has an argument for what `sep`arates the values, with a default of `" "`. The `paste0` function is identical with default separation of `""`.
+
+----
+
+R has pattern matching through regular expressions available. A useful function is `grepl` that indicates if a match occurs:
+
+```
+grepl("QUICK", qwerty)  # case sensitive
+sapply(letters, function(x) grepl(x, qwerty))  # all there...
+```
+
+(This last command hopefully will make sense by the end of these notes...)
+
+
+## Factors
+
+For categorical data, there are a *fixed*  number of levels from which a value comes from. There are computational advantages here, as storage can be made more efficient. There are other statistical advantages too.
+
+Putting that asside, such values are called "factors" and are created by the `factor` function. Let's make the Likert scale. (The levels are generated with a vector which will be explained in a bit):
+
+----
+
+```{r}
+likert <- c("strongly agree", "agree", "no opinion", 
+            "disagree", "strongl disagree")
+x = factor("agree", levels = likert)
+x
+```
+
+The value of `x` is secretly an integer:
+
+```{r}
+storage.mode(x)
+```
+
+This can cause confusion, as the levels might look numeric, but use a different ordering.
+
+----
+
+We can't set a value that is not one of the levels
+
+```{r}
+factor("AGREE", levels=likert)
+```
+
+So spelling matters.
+
+----
+
+Oops, I spelled "strongly" as `strongl`. How to change that?
+
+We could correct the values of `likert` and then re-create `x`. But we may not want to do that. We can also redefine the levels of a factor. Here is one way:
+
+```{r}
+likert <- c("strongly agree", "agree", "no opinion", 
+            "disagree", "strongly disagree")
+levels(x) <- likert
+x
+```
+
+> For those with experience programming, the left side with `levels(x)...` should seem a bit odd. This is R's syntax for mutating the value that `x` is assigned to and is idiosyncratic.
+
+---- 
+
+Levels can also be collapsed and recoded. The syntax below uses a list, to be described later. For now it consists of a pairs of new labels and old labels to collaspe:
+
+```{r}
+levels(x) <- list("AGREE"    = c("strong agree", "agree"), 
+                  "BLAND"    = c("no opinion"), 
+                  "DISAGREE" = c("disagree", "strongly disagree")
+)
+```
+
+----
+
+If you think this all seems like a pain, you aren't alone. However, by default, R uses factors where you might want simple character data. So, knowing what is happening is important.
+
+## Missing Data
+
+We saw that when we tried to create a factor from a value that wasn't a level, we got an odd answer:
+
+```{r}
+factor("AGREE", levels=likert)
+```
+
+What exactly is `<NA>`? In this case the proposed value isn't one of the agreed upon levels, so the actual answer is missing. In R the value `NA` stands for "Not available" or "missing." A value can be unknown, hence missing; or unknowable, and missing.
+
+```{r}
+NA
+```
+
+----
+
+An interesting think about `NA` values is that they poison subsequent operations:
+
+```{r}
+5 + NA
+```
+
+Some functions have arguments that instruct the computation to proceed after dropping `NA` values.
+
+----
+
+How might we identify an `NA` value? We could try this:
+
+```{r}
+NA == NA
+```
+
+Hmmm, why might that not work?
+
+The `is.na` function is here for this:
+
+```{r}
+is.na(NA)
+```
+
+(This is different, but somehow related to, the floating point value `NaN`.)
+
+## Coercion between types
+
+R has numerous "`as`" functions to coerce one data type into another.
+
+Earlier, we slipped in this conversion:
+
+```{r}
+as.POSIXlt(Sys.time())
+```
+
+----
+
+For another example, we can make a string numeric (if sensible) through:
+
+```{r}
+as.numeric("123")
+as.numeric("-1.23e4")
+as.numeric("one-two-three")   # fails
+```
+
+----
+
+We can find the level of a factor through `as.numeric`:
+
+```{r}
+x <- factor("agree", levels=likert)
+as.numeric(x)
+```
+
+But what if our factor is labeled by numbers:
+
+```{r}
+x <- factor(5, c(5,10,15,20))
+x
+as.numeric(x)
+```
+
+-----
+
+Okay, how do we get the value `5`? First by coercing to a character and then numeric:
+
+```{r}
+as.numeric( as.character( x ) )
+```
+
+This is a somewhat common thing to do. R makes some things easy though. Even though this isn't quite right, equality will convert things quietly to make this test work as desired:
+
+```
+x == 5
+```
+
+----
+
+More generally, to coerce an object of one class into another, we have the `as(obj, classname)` function:
+
+```{r}
+as(1.0, "integer")
+```
+
+## Questions
+
+XXX
+
