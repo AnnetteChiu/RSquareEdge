@@ -152,8 +152,8 @@
 
 <pre class = 'prettyprint lang-r'>now() + weeks(c(1,2,3,4))</pre>
 
-<pre >## [1] &quot;2016-02-25 10:02:49 EST&quot; &quot;2016-03-03 10:02:49 EST&quot;
-## [3] &quot;2016-03-10 10:02:49 EST&quot; &quot;2016-03-17 10:02:49 EDT&quot;</pre>
+<pre >## [1] &quot;2016-02-26 07:58:53 EST&quot; &quot;2016-03-04 07:58:53 EST&quot;
+## [3] &quot;2016-03-11 07:58:53 EST&quot; &quot;2016-03-18 07:58:53 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -169,7 +169,7 @@
 
 <pre class = 'prettyprint lang-r'>c(now(), 10)           # 10 becomes time 10 minutes after starting point</pre>
 
-<pre >## [1] &quot;2016-02-18 10:02:49 EST&quot; &quot;1969-12-31 19:00:10 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 07:58:53 EST&quot; &quot;1969-12-31 19:00:10 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Length of vectors</h2></hgroup><article  id="length-of-vectors">
 
@@ -213,6 +213,16 @@ x</pre>
 <pre class = 'prettyprint lang-r'>names(x) &lt;- toupper(names(x))</pre>
 
 <p>(This uses <code>names</code> on <em>both</em> sides&#8230;)</p>
+
+</article></slide><slide class=''><hgroup><h2>Attributes: class</h2></hgroup><article  id="attributes-class">
+
+<p>Another attribute of a vector is its class. This information is used when functions are called to decide which method to use:</p>
+
+<pre class = 'prettyprint lang-r'>class(x)</pre>
+
+<pre >## [1] &quot;numeric&quot;</pre>
+
+<p>This attribute can be modified and new classes can be easily created.</p>
 
 <h3>Basic indexing</h3>
 

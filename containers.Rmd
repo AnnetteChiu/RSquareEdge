@@ -101,6 +101,18 @@ names(x) <- toupper(names(x))
 
 (This uses `names` on *both* sides...)
 
+
+## Attributes: class
+
+Another attribute of a vector is its class. This information is used when functions are called to decide which method to use:
+
+```{r}
+class(x)
+```
+
+This attribute can be modified and new classes can be easily created.
+
+
 ### Basic indexing
 
 As mentioned, vectors have their components in an order. We use indexing to get them. The `[]` notation is for indexing.
