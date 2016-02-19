@@ -1,0 +1,62 @@
+Some question ideas
+
+* The built in data sets `rivers`, `state77`, and `mtcars` are what type of container?
+
+- For any vectors, are there names? WHat is the length? What it the class
+
+- for matrices, are there row names, column names? What is the dimension
+
+- for data frames, are there row names? column names, the dimension
+
+
+* Load the `MASS` package (a builtin). We consider the `Cars93` data set. It is a data frame.
+
+- what are the variable names?
+
+- What kind of variable is the one counting the number of cylinders?
+
+- how many "cases" are there?
+
+- are the cases labeled with row names or some other way?
+
+- One of the variables is for highway mileage. What is the greatest value? smallest value? (`maximum`, `minimum`), what is the average value? the "middle" values (`mean`, `median`). What is the variability? (`IQR` or `sd` measure this)
+
+* for the built-in `rivers` data set, how many are greater than 1000? How many are between 100 and 200?
+
+* Can you figure out how many seconds there are in a day (without multiplying `60*60*24`)?
+
+* Will the year 2024 be a leap year?
+
+* Again with the `Cars93` data set from the `MASS` package...
+
+- for the `Cars93` data set, what is the average horsepower for the cars with highway mileage better than 25? Lower than 15?
+
+- for the `Cars93` data set, what is the largest price difference between minimum and maximum price? Smallest?
+
+- For the `Cars93` data set, what are the top 3 cases for highway mileage per potential passengers? (If a car carries 10 people and gets 20 MPG, then the answer is 2 for that car)
+
+- How many cases in the data set have `USA` as the origin? How many are non-USA?
+
+- Is the heaviest car also the car with the worst gas mileage (HWY)? What about lightest car, is it the best mileage?
+
+- On average do front-wheel cars get better mileage than rear wheel cars, based on this data?
+
+- If we think of cars as rectangles (`Length` and `Width`) having a certain density (let's say area over `Weight`), what cars are most dense here? Least dense?
+
+* DeMorgan's law say something about the relationship of boolean. By experimenting, can you verify if "not (A or B)" is (not A) or (not B)? YOu experiment by looking at combinations of either `!(TRUE | FALSE)` versus things like (!TRUE) | (!FALSE), say. ('|' is "or" and '&' is "and")
+
+* can you add logical values? If so, how do they turn into numbers?
+
+* can you multiply boolean values? That is, does something like this make sense `x * (x > 0)` and if so, what does it do?
+
+* Make `x` and `y` with different lengths, says `x<-c(1,2,3)` and `y<-c(1,2,3,4)`. Can you add the two? Multiply? If so, explain how it seems to work
+
+* Recall a reduction takes some summary of an object `x` that has lower dimension. For a vector, this would be, say, a single numeric summary. Are the function `mean`, `sd`, `length` reductions?
+
+* A phone list has names, numbers and addresses for many different people. Explain how you might store this in R
+
+* A shopping list has items to buy along with quantities. Explain how you might store this in R
+
+* Run this command `out <- hist(rivers)`. If we hadn't saved the output, a graphic would be produced. Instead a list is assigned to `out`. What are the components? Could this list have been a data frame instead? The attribute `class` controls how this item is displayed, what class is this list? Does that mean `out` is not a list? (Use `is.list(out)` to ask.)
+
+
