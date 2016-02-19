@@ -260,7 +260,7 @@ x &gt; 0</pre>
 <pre class = 'prettyprint lang-r'>now &lt;- Sys.time()
 now</pre>
 
-<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:47:11 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -268,7 +268,7 @@ now</pre>
 
 <pre class = 'prettyprint lang-r'>now - 60*60 # an hour ago</pre>
 
-<pre >## [1] &quot;2016-02-19 13:44:01 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 13:47:11 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -277,7 +277,7 @@ now</pre>
 <pre class = 'prettyprint lang-r'>a &lt;- as.POSIXlt(now)
 a</pre>
 
-<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:47:11 EST&quot;</pre>
 
 <pre class = 'prettyprint lang-r'>a$mday  # day of month</pre>
 
@@ -297,7 +297,7 @@ a</pre>
 
 <pre class = 'prettyprint lang-r'>now()</pre>
 
-<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:47:11 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -542,7 +542,7 @@ x</pre>
 
 <pre class = 'prettyprint lang-r'>as.POSIXlt(Sys.time())</pre>
 
-<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:47:11 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -603,9 +603,11 @@ x</pre>
 
 <p>More generally, to coerce an object of one class into another, we have the <code>as(obj, classname)</code> function:</p>
 
-<pre class = 'prettyprint lang-r'>as(1.0, &quot;integer&quot;)</pre>
+<pre class = 'prettyprint lang-r'>as(1.0, &quot;factor&quot;)</pre>
 
-<pre >## [1] 1</pre>
+<pre >## Object of class &quot;factor&quot;
+## [1] &lt;NA&gt;
+## Levels:</pre>
 
 </article></slide><slide class=''><hgroup><h2>Questions</h2></hgroup><article  id="questions">
 
