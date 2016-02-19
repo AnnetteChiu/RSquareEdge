@@ -156,6 +156,7 @@ The "algebra" of Boolean values is implemented by `&` (and) and `|` (or):
 ```{r}
 TRUE & FALSE
 TRUE | FALSE
+!FALSE
 ```
 
 
@@ -261,7 +262,7 @@ When enterind data in excel, we see this in action with auto-fill turned on.
 Character data in R is formed by using matching single or double quotes.
 
 ```{r}
-qwerty <- "the quick brown fox jumped over the lazy dog"
+qwerty <- "the quick brown fox jumps over the lazy dog"
 lincoln <- "four score and seven years ago..."
 ````
 
@@ -281,18 +282,18 @@ substr(qwerty, 5,9)  # take substrings
 
 Strings can be split up with `strsplit`:
 
-```
-strsplit(qwerty, " ")
+```{r}
+strsplit(qwerty, "")
 ```
 
-(The otupt is a bit confusing for now.)
+(The output is a bit confusing for now.)
 
 ----
 
 Strings can be combined. It is a bit cumbersome in R compared to other languages. The `paste` command can be used:
 
 ```{r}
-paste("the", "quick", "brown", "fox")
+paste("the", "quick", "brown", "fox", sep="<-->")
 ```
 
 `paste` has an argument for what `sep`arates the values, with a default of `" "`. The `paste0` function is identical with default separation of `""`.
@@ -301,7 +302,7 @@ paste("the", "quick", "brown", "fox")
 
 R has pattern matching through regular expressions available. A useful function is `grepl` that indicates if a match occurs:
 
-```
+```{r}
 grepl("QUICK", qwerty)  # case sensitive
 sapply(letters, function(x) grepl(x, qwerty))  # all there...
 ```
@@ -362,7 +363,7 @@ x
 Levels can also be collapsed and recoded. The syntax below uses a list, to be described later. For now it consists of a pairs of new labels and old labels to collaspe:
 
 ```{r}
-levels(x) <- list("AGREE"    = c("strong agree", "agree"), 
+levels(x) <- list("AGREE"    = c("strongly agree", "agree"), 
                   "BLAND"    = c("no opinion"), 
                   "DISAGREE" = c("disagree", "strongly disagree")
 )
@@ -448,6 +449,11 @@ But what if our factor is labeled by numbers:
 ```{r}
 x <- factor(5, c(5,10,15,20))
 x
+```
+
+----
+
+```{r}
 as.numeric(x)
 ```
 
@@ -461,7 +467,7 @@ as.numeric( as.character( x ) )
 
 This is a somewhat common thing to do. R makes some things easy though. Even though this isn't quite right, equality will convert things quietly to make this test work as desired:
 
-```
+```{r}
 x == 5
 ```
 

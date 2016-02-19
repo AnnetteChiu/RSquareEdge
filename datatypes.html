@@ -127,7 +127,7 @@
 <p>Why are is this leaky:</p>
 
 <ul>
-<li>the significand can only represent so many different values. In 64-bit, there are \(2^53\), or about:</li>
+<li>the significand can only represent so many different values. In 64-bit, there are \(2^{53}\), or about:</li>
 </ul>
 
 <pre class = 'prettyprint lang-r'>2^53</pre>
@@ -202,7 +202,7 @@
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>If all we wanted to discuss here was numeric data, we would have much more to say about types. Unless your data is unusual, R will store it as floating point numbers. (Well, not really. When R interfaces with other systems it must be able to interact with a myriad of different representations.)</p>
+<p>If all we wanted to discuss here was numeric data, we would not have much more to say about types. Unless your data is unusual, R will store it as floating point numbers. (Well, not really. When R interfaces with other systems it must be able to interact with a myriad of different representations.)</p>
 
 <p>The mathematical operations are predictable:</p>
 
@@ -218,7 +218,7 @@
 
 <p>The value <code>pi</code> is one of a few built-in constants. The number <code>e</code> is not one of them. For that, the function <code>exp(1)</code> can be used.</p>
 
-<p>Not mentioned, but part of floating point are the value plus or minus infinity: <code>Inf</code> (an answer to <code>1/0</code>) and <code>NaN</code> for &quot;not a number&quot; which is a way to signal an error without stopping a program. (Generated, for example, by <code>0/0</code>.)</p>
+<p>Not mentioned, but part of floating point, are the value plus or minus infinity: <code>Inf</code> (an answer to <code>1/0</code>) and <code>NaN</code> for &quot;not a number&quot; which is a way to signal an error without stopping a program. (Generated, for example, by <code>0/0</code>.)</p>
 
 </article></slide><slide class=''><hgroup><h2>Logical values</h2></hgroup><article  id="logical-values">
 
@@ -247,17 +247,28 @@ x &gt; 0</pre>
 
 <pre >## [1] TRUE</pre>
 
+<pre class = 'prettyprint lang-r'>!FALSE</pre>
+
+<pre >## [1] TRUE</pre>
+
 </article></slide><slide class=''><hgroup><h2>Dates and times</h2></hgroup><article  id="dates-and-times">
 
-<p>R has built-in classes for storing dates and times. As well, their are other external packages, such as<code>lubridate</code>, to facilitate this.</p>
+<p>R has built-in classes for storing dates and times. As well, their are other external packages, such as <code>lubridate</code>, to facilitate this.</p>
 
 <p>The <code>POSIXct</code> class represents the (signed) number of seconds since the beginning of 1970 (in the UTC time zone) as a number vector (<code>?POSIXct</code>):</p>
 
-<pre class = 'prettyprint lang-r'>now &lt;- Sys.time()</pre>
+<pre class = 'prettyprint lang-r'>now &lt;- Sys.time()
+now</pre>
+
+<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
+<p>Arithmetic is possible, as with:</p>
 
 <pre class = 'prettyprint lang-r'>now - 60*60 # an hour ago</pre>
 
-<pre >## [1] &quot;2016-02-18 18:05:33 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 13:44:01 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -266,11 +277,11 @@ x &gt; 0</pre>
 <pre class = 'prettyprint lang-r'>a &lt;- as.POSIXlt(now)
 a</pre>
 
-<pre >## [1] &quot;2016-02-18 19:05:33 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
 
 <pre class = 'prettyprint lang-r'>a$mday  # day of month</pre>
 
-<pre >## [1] 18</pre>
+<pre >## [1] 19</pre>
 
 <p>Time is pretty complicated when timezones, leap seconds, leap years, &#8230; are included. The manual page is informative</p>
 
@@ -286,14 +297,18 @@ a</pre>
 
 <pre class = 'prettyprint lang-r'>now()</pre>
 
-<pre >## [1] &quot;2016-02-18 19:05:33 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
 <p>Or using one of the constructors, such as <code>ymd</code> or <code>ymd_hms</code></p>
 
 <pre class = 'prettyprint lang-r'>today &lt;- ymd(&quot;2016-02-19&quot;)
-today_start &lt;- ymd_hms(&quot;2016-02-19 13:00:00&quot;, tz = &quot;EST&quot;) # OlsonNames()
+today</pre>
+
+<pre >## [1] &quot;2016-02-19 UTC&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>today_start &lt;- ymd_hms(&quot;2016-02-19 13:00:00&quot;, tz = &quot;EST&quot;) # OlsonNames()
 today_start</pre>
 
 <pre >## [1] &quot;2016-02-19 13:00:00 EST&quot;</pre>
@@ -308,7 +323,9 @@ today_start</pre>
 
 <pre class = 'prettyprint lang-r'>ymd(&quot;2017-02-29&quot;)</pre>
 
-<pre >## [1] &quot;2017-03-01 UTC&quot;</pre>
+<pre >## Warning: All formats failed to parse. No formats found.</pre>
+
+<pre >## [1] NA</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -322,7 +339,7 @@ today_start</pre>
 
 </article></slide><slide class=''><hgroup><h2>Character values</h2></hgroup><article  id="character-values">
 
-<p>Historically Data in the social sciences was classified as one of &quot;nominal&quot;, &quot;ordinal&quot;, &quot;interval&quot;, or &quot;ratio&quot;. The distinctions can be read <a href='https://en.wikipedia.org/wiki/Level_of_measurement' title=''>here</a>.</p>
+<p>Historically data in the social sciences was classified as one of &quot;nominal&quot;, &quot;ordinal&quot;, &quot;interval&quot;, or &quot;ratio&quot;. The distinctions can be read <a href='https://en.wikipedia.org/wiki/Level_of_measurement' title=''>here</a>.</p>
 
 <p>For &quot;nominal&quot;, we have</p>
 
@@ -347,7 +364,7 @@ today_start</pre>
 
 <p>Character data in R is formed by using matching single or double quotes.</p>
 
-<pre class = 'prettyprint lang-r'>qwerty &lt;- &quot;the quick brown fox jumped over the lazy dog&quot;
+<pre class = 'prettyprint lang-r'>qwerty &lt;- &quot;the quick brown fox jumps over the lazy dog&quot;
 lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 <p>Character data can be encoded to accommodate other languages. This topic can be involved, but is necessary for many uses. Here we assume ASCII encoding are used.</p>
@@ -358,11 +375,11 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 <pre class = 'prettyprint lang-r'>toupper(qwerty)  # also tolower</pre>
 
-<pre >## [1] &quot;THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG&quot;</pre>
+<pre >## [1] &quot;THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG&quot;</pre>
 
 <pre class = 'prettyprint lang-r'>chartr(&quot;q&quot;, &quot;Q&quot;, qwerty) # more fine-grained translation (never used before!)</pre>
 
-<pre >## [1] &quot;the Quick brown fox jumped over the lazy dog&quot;</pre>
+<pre >## [1] &quot;the Quick brown fox jumps over the lazy dog&quot;</pre>
 
 <pre class = 'prettyprint lang-r'>substr(qwerty, 5,9)  # take substrings</pre>
 
@@ -372,17 +389,22 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 <p>Strings can be split up with <code>strsplit</code>:</p>
 
-<pre >strsplit(qwerty, &quot; &quot;)</pre>
+<pre class = 'prettyprint lang-r'>strsplit(qwerty, &quot;&quot;)</pre>
 
-<p>(The otupt is a bit confusing for now.)</p>
+<pre >## [[1]]
+##  [1] &quot;t&quot; &quot;h&quot; &quot;e&quot; &quot; &quot; &quot;q&quot; &quot;u&quot; &quot;i&quot; &quot;c&quot; &quot;k&quot; &quot; &quot; &quot;b&quot; &quot;r&quot; &quot;o&quot; &quot;w&quot; &quot;n&quot; &quot; &quot; &quot;f&quot;
+## [18] &quot;o&quot; &quot;x&quot; &quot; &quot; &quot;j&quot; &quot;u&quot; &quot;m&quot; &quot;p&quot; &quot;s&quot; &quot; &quot; &quot;o&quot; &quot;v&quot; &quot;e&quot; &quot;r&quot; &quot; &quot; &quot;t&quot; &quot;h&quot; &quot;e&quot;
+## [35] &quot; &quot; &quot;l&quot; &quot;a&quot; &quot;z&quot; &quot;y&quot; &quot; &quot; &quot;d&quot; &quot;o&quot; &quot;g&quot;</pre>
+
+<p>(The output is a bit confusing for now.)</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
 <p>Strings can be combined. It is a bit cumbersome in R compared to other languages. The <code>paste</code> command can be used:</p>
 
-<pre class = 'prettyprint lang-r'>paste(&quot;the&quot;, &quot;quick&quot;, &quot;brown&quot;, &quot;fox&quot;)</pre>
+<pre class = 'prettyprint lang-r'>paste(&quot;the&quot;, &quot;quick&quot;, &quot;brown&quot;, &quot;fox&quot;, sep=&quot;&lt;--&gt;&quot;)</pre>
 
-<pre >## [1] &quot;the quick brown fox&quot;</pre>
+<pre >## [1] &quot;the&lt;--&gt;quick&lt;--&gt;brown&lt;--&gt;fox&quot;</pre>
 
 <p><code>paste</code> has an argument for what <code>sep</code>arates the values, with a default of <code>&quot; &quot;</code>. The <code>paste0</code> function is identical with default separation of <code>&quot;&quot;</code>.</p>
 
@@ -390,8 +412,16 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 <p>R has pattern matching through regular expressions available. A useful function is <code>grepl</code> that indicates if a match occurs:</p>
 
-<pre >grepl(&quot;QUICK&quot;, qwerty)  # case sensitive
-sapply(letters, function(x) grepl(x, qwerty))  # all there...</pre>
+<pre class = 'prettyprint lang-r'>grepl(&quot;QUICK&quot;, qwerty)  # case sensitive</pre>
+
+<pre >## [1] FALSE</pre>
+
+<pre class = 'prettyprint lang-r'>sapply(letters, function(x) grepl(x, qwerty))  # all there...</pre>
+
+<pre >##    a    b    c    d    e    f    g    h    i    j    k    l    m    n    o 
+## TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE 
+##    p    q    r    s    t    u    v    w    x    y    z 
+## TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE TRUE</pre>
 
 <p>(This last command hopefully will make sense by the end of these notes&#8230;)</p>
 
@@ -452,7 +482,7 @@ x</pre>
 
 <p>Levels can also be collapsed and recoded. The syntax below uses a list, to be described later. For now it consists of a pairs of new labels and old labels to collaspe:</p>
 
-<pre class = 'prettyprint lang-r'>levels(x) &lt;- list(&quot;AGREE&quot;    = c(&quot;strong agree&quot;, &quot;agree&quot;), 
+<pre class = 'prettyprint lang-r'>levels(x) &lt;- list(&quot;AGREE&quot;    = c(&quot;strongly agree&quot;, &quot;agree&quot;), 
                   &quot;BLAND&quot;    = c(&quot;no opinion&quot;), 
                   &quot;DISAGREE&quot; = c(&quot;disagree&quot;, &quot;strongly disagree&quot;)
 )</pre>
@@ -512,7 +542,7 @@ x</pre>
 
 <pre class = 'prettyprint lang-r'>as.POSIXlt(Sys.time())</pre>
 
-<pre >## [1] &quot;2016-02-18 19:05:33 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 14:44:01 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -549,6 +579,8 @@ x</pre>
 <pre >## [1] 5
 ## Levels: 5 10 15 20</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
 <pre class = 'prettyprint lang-r'>as.numeric(x)</pre>
 
 <pre >## [1] 1</pre>
@@ -563,7 +595,9 @@ x</pre>
 
 <p>This is a somewhat common thing to do. R makes some things easy though. Even though this isn&#39;t quite right, equality will convert things quietly to make this test work as desired:</p>
 
-<pre >x == 5</pre>
+<pre class = 'prettyprint lang-r'>x == 5</pre>
+
+<pre >## [1] TRUE</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 

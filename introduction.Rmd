@@ -3,9 +3,11 @@ title: "Introduction"
 output: ioslides_presentation
 ---
 
-John Verzani, `jverzani@gmail.com`
+
 
 # What is R?
+
+John Verzani, `jverzani@gmail.com`
 
 From its [homepage](https://www.r-project.org/):
 
