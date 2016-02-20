@@ -152,8 +152,8 @@
 
 <pre class = 'prettyprint lang-r'>now() + weeks(c(1,2,3,4))</pre>
 
-<pre >## [1] &quot;2016-02-26 07:58:53 EST&quot; &quot;2016-03-04 07:58:53 EST&quot;
-## [3] &quot;2016-03-11 07:58:53 EST&quot; &quot;2016-03-18 07:58:53 EDT&quot;</pre>
+<pre >## [1] &quot;2016-02-26 15:19:48 EST&quot; &quot;2016-03-04 15:19:48 EST&quot;
+## [3] &quot;2016-03-11 15:19:48 EST&quot; &quot;2016-03-18 15:19:48 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -169,7 +169,7 @@
 
 <pre class = 'prettyprint lang-r'>c(now(), 10)           # 10 becomes time 10 minutes after starting point</pre>
 
-<pre >## [1] &quot;2016-02-19 07:58:53 EST&quot; &quot;1969-12-31 19:00:10 EST&quot;</pre>
+<pre >## [1] &quot;2016-02-19 15:19:48 EST&quot; &quot;1969-12-31 19:00:10 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Length of vectors</h2></hgroup><article  id="length-of-vectors">
 
@@ -185,6 +185,8 @@ length(x)</pre>
 <pre class = 'prettyprint lang-r'>c()</pre>
 
 <pre >## NULL</pre>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
 <p>Rather a type must be specified:</p>
 
@@ -208,6 +210,8 @@ x</pre>
 
 <pre >## [1] &quot;one&quot;   &quot;two&quot;   &quot;three&quot;</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
 <p>These values can be changed:</p>
 
 <pre class = 'prettyprint lang-r'>names(x) &lt;- toupper(names(x))</pre>
@@ -224,7 +228,7 @@ x</pre>
 
 <p>This attribute can be modified and new classes can be easily created.</p>
 
-<h3>Basic indexing</h3>
+</article></slide><slide class=''><hgroup><h2>Basic indexing</h2></hgroup><article  id="basic-indexing">
 
 <p>As mentioned, vectors have their components in an order. We use indexing to get them. The <code>[]</code> notation is for indexing.</p>
 
@@ -250,6 +254,11 @@ x</pre>
 
 <pre >## &lt;NA&gt; 
 ##   NA</pre>
+
+<pre class = 'prettyprint lang-r'>x[&quot;ONE&quot;]</pre>
+
+<pre >## ONE 
+##   1</pre>
 
 </article></slide><slide class=''><hgroup><h2>Index by logical vectors</h2></hgroup><article  id="index-by-logical-vectors">
 

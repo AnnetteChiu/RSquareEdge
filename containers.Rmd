@@ -73,6 +73,7 @@ Vectors can be 0 length, but they aren't constructed this way:
 ```{r}
 c()
 ```
+----
 
 Rather a type must be specified:
 
@@ -92,6 +93,8 @@ x <- c("one"= 1, "two" = 2, "three" = 3)
 x
 names(x)
 ```
+
+----
 
 These values can be changed:
 
@@ -113,7 +116,7 @@ class(x)
 This attribute can be modified and new classes can be easily created.
 
 
-### Basic indexing
+## Basic indexing
 
 As mentioned, vectors have their components in an order. We use indexing to get them. The `[]` notation is for indexing.
 
@@ -135,6 +138,7 @@ We can index by the names when a vector has names:
 
 ```{r}
 x["one"]
+x["ONE"]
 ```
 
 ## Index by logical vectors
