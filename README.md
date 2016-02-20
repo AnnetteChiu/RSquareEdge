@@ -8,3 +8,6 @@ read the HTML online, follow these links:
 * [Data Containers](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/containers.html)
 * [Data Manipulations](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/manipulating-containers.html)
 
+
+Some questions on this material are here: 
+[Questions](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/questions.html)
