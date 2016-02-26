@@ -2,7 +2,7 @@ Some question ideas
 
 * The built in data sets `rivers`, `state77`, and `mtcars` are what type of container?
 
-- For any vectors, are there names? WHat is the length? What it the class
+- For any vectors, are there names? What is the length? What it the class
 
 - for matrices, are there row names, column names? What is the dimension
 
@@ -58,5 +58,28 @@ Some question ideas
 * A shopping list has items to buy along with quantities. Explain how you might store this in R
 
 * Run this command `out <- hist(rivers)`. If we hadn't saved the output, a graphic would be produced. Instead a list is assigned to `out`. What are the components? Could this list have been a data frame instead? The attribute `class` controls how this item is displayed, what class is this list? Does that mean `out` is not a list? (Use `is.list(out)` to ask.)
+
+* make two small vectors `x<-c(1,2,3)`, `y<-c(4,5,6)`. What is `c(x,y)`? A vector of numbers? A vector of two vectors? If not the latter, how might you make that type of object?
+
+----
+
+* Load the `nycflights13` package. (You may need to install it), and we will consider the `flights` data set.
+
+- create a data set of just the `UA` flights. How many are there?
+- for the `UA` flights, how many were from `EWR`
+- For `UA` flights from `EWR` can you tell which month had the most flights?
+
+* For the `flights` data set
+
+- which plane (tail number) had the longest flight?
+- which plane (tail number) flew the most flights? most miles?
+- which plane had the most flights in one day?
+
+* For the `flights` data set, 
+
+- what was the busiest airport? busiest airline?
+- At `EWR` was the busiest airline the same as at `JFK`.
+- Can you find the busiest airline for each airport?
+
 
 

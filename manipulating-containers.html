@@ -85,6 +85,8 @@
 
 <slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Manipulating Data Containers</h2></hgroup><article  id="manipulating-data-containers">
 
+</article></slide><slide class=''><hgroup><h2>Manipulating Data Containers</h2></hgroup><article  id="manipulating-data-containers-1">
+
 <p>Storing data sets in data frames is very convenient, but with just the indexing notation, can make for cumbersome tasks.</p>
 
 <p>Consider the following question (from UsingR): For the <code>normtemp</code> dataset perform a <code>t.test</code> for temperature by gender.</p>
@@ -131,6 +133,10 @@
 ## 
 ##     cancer</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
+<p>The data looks like:</p>
+
 <pre class = 'prettyprint lang-r'>head(normtemp)</pre>
 
 <pre >##   temperature gender hr
@@ -143,7 +149,7 @@
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>We see gender is coded. The docs (?normtemp) say 1 for male 2 for female:</p>
+<p>We see gender is coded. The docs (?normtemp) say 1 for male 2 for female. Here we split the data to perform a &quot;t test&quot;:</p>
 
 <pre class = 'prettyprint lang-r'>males &lt;- normtemp[normtemp$gender == 1, &quot;temperature&quot;]
 females &lt;- normtemp[normtemp$gender == 2, &quot;temperature&quot;]
@@ -165,7 +171,7 @@ t.test(males, females)</pre>
 
 <p>The pain comes from having to type so much for a task which should be simple: split the data and apply some function.</p>
 
-<p>For R&#39;s modeling functions, there is a syntax &#8211; the formula &#8211; that is usually designed for this:</p>
+<p>For R&#39;s modeling functions, there is a syntax &#8211; the model formula &#8211; that is usually designed for this:</p>
 
 <pre class = 'prettyprint lang-r'>t.test(temperature ~ gender, normtemp)</pre>
 
@@ -199,7 +205,8 @@ t.test(males, females)</pre>
 
 <p>We will illustrate with two data sets, one modest, the other large</p>
 
-<pre class = 'prettyprint lang-r'>library(nycflights13); library(MASS)
+<pre class = 'prettyprint lang-r'>library(nycflights13)   ##  install.packages(&quot;nycflights13&quot;) is needed at some point
+library(MASS)           ## Built in package
 dim(flights)</pre>
 
 <pre >## [1] 336776     16</pre>
@@ -275,7 +282,7 @@ Cars93 &lt;- Cars93</pre>
 
 </article></slide><slide class=''><hgroup><h2>Subsetting, Filtering of vectors</h2></hgroup><article  id="subsetting-filtering-of-vectors">
 
-<p>What flights are JetBlue? We can see that the carrier variables is coded:</p>
+<p>What flights are JetBlue? We can see that the <code>carrier</code> variable is coded:</p>
 
 <pre class = 'prettyprint lang-r'>table(flights$carrier)</pre>
 
@@ -293,13 +300,13 @@ Cars93 &lt;- Cars93</pre>
 jb &lt;- with(flights, flights[carrier==&quot;B6&quot;, ]) # using with
 jb &lt;- subset(flights, carrier == &quot;B6&quot;)    # new function</pre>
 
-<p>The shortest &#8211; by a hair &#8211; is the use of <code>subset</code>. This is a convenience function. Rather than describe that function, we mention similar one from the <code>dplyr</code> package.</p>
+<p>The shortest &#8211; by a hair &#8211; is the use of <code>subset</code>. This is a convenience function. Rather than describe that function, we mention a similar one from the <code>dplyr</code> package.</p>
 
 </article></slide><slide class=''><hgroup><h2>Subsetting, Filtering data frames using <code>dplyr</code></h2></hgroup><article  id="subsetting-filtering-data-frames-using-dplyr">
 
-<p>The <code>dplyr</code> package provides some higher-level interfaces to indexing. For this task, filtering, we have the <code>filter</code> function.</p>
+<p>The <code>dplyr</code> package provides some higher-level interfaces to indexing. For this task, filtering our cases, we have the <code>filter</code> function.</p>
 
-<pre class = 'prettyprint lang-r'>library(dplyr)</pre>
+<pre class = 'prettyprint lang-r'>library(dplyr)   # ignore the many comments...</pre>
 
 <pre >## 
 ## Attaching package: &#39;dplyr&#39;</pre>
@@ -330,9 +337,13 @@ jb &lt;- subset(flights, carrier == &quot;B6&quot;)    # new function</pre>
 
 <pre class = 'prettyprint lang-r'>jb &lt;- filter(flights, carrier == &quot;B6&quot;, origin == &quot;JFK&quot;)</pre>
 
-<p>Values get combined with <code>&amp;</code>. To use &quot;ors&quot;, we can use <code>|</code>:</p>
+<p>In the above, values get combined with <code>&amp;</code>.</p>
+
+<p>To use &quot;ors&quot;, we can explicitly use <code>|</code>:</p>
 
 <pre class = 'prettyprint lang-r'>jb &lt;- filter(flights, carrier == &quot;B6&quot; | origin == &quot;JFK&quot;)</pre>
+
+<p>(But not <code>&amp;&amp;</code> or <code>||</code> here, a common mistake)</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -351,6 +362,8 @@ nrow(red_eyes) / nrow(flights)</pre>
 dim(no_air)</pre>
 
 <pre >## [1] 9430   16</pre>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
 <p>Did any flights just turn around? (no)</p>
 
@@ -372,7 +385,12 @@ dim(no_air)</pre>
 <p>This can also use names for clarity:</p>
 
 <pre class = 'prettyprint lang-r'>nms &lt;- names(Cars93)[c(1, 2, 11, 12, 13,14)]  # or type ...
-a &lt;- Cars93[, nms]</pre>
+nms</pre>
+
+<pre >## [1] &quot;Manufacturer&quot; &quot;Model&quot;        &quot;Cylinders&quot;    &quot;EngineSize&quot;  
+## [5] &quot;Horsepower&quot;   &quot;RPM&quot;</pre>
+
+<pre class = 'prettyprint lang-r'>a &lt;- Cars93[, nms]</pre>
 
 <p>If you want all <em>but</em> a variable, negative indexing is useful.</p>
 
@@ -380,21 +398,33 @@ a &lt;- Cars93[, nms]</pre>
 
 <p>The <code>select</code> function of <code>dplyr</code> makes this slightly nicer if typing, as it use non-standard evaluation of names:</p>
 
-<pre class = 'prettyprint lang-r'>a &lt;- select(Cars93, Manufacturer, Model, Cylinders, EngineSize, Horsepower, RPM)</pre>
-
-<p>If can also &quot;fill in&quot;, the above covers two sequences:</p>
-
-<pre class = 'prettyprint lang-r'>a &lt;- select(Cars93, Manufacturer:Model, Cylinders:RPM)</pre>
+<pre class = 'prettyprint lang-r'>a &lt;- select(Cars93, Manufacturer, Model, 
+            Cylinders, EngineSize, Horsepower, RPM)</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>At the <em>enormous</em> risk of confusing things, the built-in <code>Filter</code> function can also be helpful with this task. This function (note capital &quot;F&quot;) reduces the elements of a vector or list to just those that satisfy some condition.</p>
+<p>It can also &quot;fill in&quot;, the above covers two sequences:</p>
+
+<pre class = 'prettyprint lang-r'>a &lt;- select(Cars93, Manufacturer:Model, Cylinders:RPM)
+head(a)</pre>
+
+<pre >##   Manufacturer   Model Cylinders EngineSize Horsepower  RPM
+## 1        Acura Integra         4        1.8        140 6300
+## 2        Acura  Legend         6        3.2        200 5500
+## 3         Audi      90         6        2.8        172 5500
+## 4         Audi     100         6        2.8        172 5500
+## 5          BMW    535i         4        3.5        208 5700
+## 6        Buick Century         4        2.2        110 5200</pre>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
+<p>At the <strong>enormous</strong> risk of confusing things, the built-in <code>Filter</code> function can also be helpful with this task. This function (note capital &quot;F&quot;) reduces the elements of a vector or list to just those that satisfy some condition.</p>
 
 <p>An example would be a means to remove variables which are not numeric:</p>
 
 <pre class = 'prettyprint lang-r'>x &lt;-Filter(is.numeric, Cars93)   # Filter(predicate, data)</pre>
 
-<p>(lower case <code>filter</code> to filter rows, upper case to <code>Filter</code> columns)</p>
+<p>(lower case <code>filter</code> to filter rows, upper case to <code>Filter</code> columns, in a data frame.)</p>
 
 </article></slide><slide class=''><hgroup><h2>Combining operations. We can combine these tasks:</h2></hgroup><article  id="combining-operations.-we-can-combine-these-tasks">
 
@@ -404,13 +434,23 @@ a &lt;- Cars93[, nms]</pre>
 
 <pre class = 'prettyprint lang-r'>a &lt;- filter(flights, carrier == &quot;B6&quot;) %&gt;% select(distance)</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
+<p>Chaining (composing) versus monolithic calls.</p>
+
+<p>The last command could aslo have been done in one function call using base R&#39;s <code>subset</code> function:</p>
+
+<pre >a &lt;- subset(flights, carrier==&quot;B6&quot;, select=distance)</pre>
+
+<p>Which is more natural?</p>
+
 </article></slide><slide class=''><hgroup><h2>Applying a function over a container</h2></hgroup><article  id="applying-a-function-over-a-container">
 
 <p>Earlier we mentioned that R vectorizes function calls so that this:</p>
 
 <pre >[x1 x2 ... xn] -&gt; [f(x1) f(x2) ... f(xn)]</pre>
 
-<p>is simply <code>f(x)</code>.</p>
+<p>is simply <code>f(x)</code>. (When <code>f</code> is not a reduction.)</p>
 
 <p>Can we do something similar for other containers? For example, lists?</p>
 
@@ -423,6 +463,8 @@ a &lt;- Cars93[, nms]</pre>
 <p>In general this is called a &quot;map&quot;. R has the <code>Map</code> function, but more commonly you&#39;ll see one of <code>sapply</code>, <code>lapply</code> or <code>apply</code></p>
 
 <p>The different names are because there are various means to apply a function over the rows or columns of a matrix or data frame and over components of a list.</p>
+
+<p>(The popular <code>plyr</code> package has many similar functions distinguished by the data types: <code>ddply</code>, <code>adply</code>, &#8230;)</p>
 
 </article></slide><slide class=''><hgroup><h2>sapply</h2></hgroup><article  id="sapply">
 
@@ -521,11 +563,23 @@ sapply(x, mean)                     # sapply(data, function)!!!</pre>
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
 ##    0.00   16.00   31.00   31.76   49.00   59.00    8255</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
+<p>Note that one output was a <em>vector</em>, the other a <em>list</em>.</p>
+
+<p>Part of the task of <code>sapply</code> (the &quot;s&quot; part) is to <em>simplify</em> the output.</p>
+
+<p>Vectors are &quot;simpler&quot; than lists, so if possible the data is massaged into a vector.</p>
+
+<p>The <code>lapply</code> function always returns a list, as does <code>Map</code>.</p>
+
 </article></slide><slide class=''><hgroup><h2>Basics of functions</h2></hgroup><article  id="basics-of-functions">
 
-<p>These are <a href='https://en.wikipedia.org/wiki/Higher-order_function' title=''>higher-order</a> functions. We pass in the name of a function. Often these are already defined for us, but there are times where we would want to define our own. For example, one way to remove NA values before computing the mean is to set the argument <code>na.rm=TRUE</code>. It is false by default. We could do this:</p>
+<p>The functions <code>sapply</code>, <code>Map</code>, <code>lapply</code>, &#8230; are <a href='https://en.wikipedia.org/wiki/Higher-order_function' title=''>higher-order</a> functions. For one of the arguments, we pass in a function object by name (or anonymously). Often these functions are already defined for us (e.g., <code>is.numeric</code>), but there are times where we would want to define our own. For example, one way to remove NA values before computing the mean is to set the argument <code>na.rm=TRUE</code>. It is false by default. We could do this:</p>
 
 <pre class = 'prettyprint lang-r'>our_mean &lt;- function(x) mean(x, na.rm=TRUE)</pre>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
 <p>Then we can use:</p>
 
@@ -550,7 +604,7 @@ sapply(x, mean)                     # sapply(data, function)!!!</pre>
 
 <pre >sapply(Filter(is.numeric, Cars93),  mean, na.rm=TRUE)</pre>
 
-<p>But being able to define quick functions is very useful.</p>
+<p>But being able to define simple functions is very useful.</p>
 
 </article></slide><slide class=''><hgroup><h2>Functions: basic</h2></hgroup><article  id="functions-basic">
 
@@ -561,7 +615,7 @@ sapply(x, mean)                     # sapply(data, function)!!!</pre>
    ... last value evaluated is the value returned ...
 }</pre>
 
-<p>In our previous example, we only have one command we do so braces were optional.</p>
+<p>In our previous example, we only have one command, so the braces were optional.</p>
 
 </article></slide><slide class=''><hgroup><h2>anonymous functions</h2></hgroup><article  id="anonymous-functions">
 
@@ -579,7 +633,7 @@ sapply(x, mean)                     # sapply(data, function)!!!</pre>
 
 <pre class = 'prettyprint lang-r'>by_origin &lt;- split(Cars93, Cars93$Origin)</pre>
 
-<p>The <code>by_origin</code> variable is a list with two components: one for <code>USA</code> and one <code>non-USA</code>. If we wanted we could apply a function to teach.</p>
+<p>The <code>by_origin</code> variable is a list with two components: one for <code>USA</code> and one <code>non-USA</code>. If we wanted we could apply a function to each.</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -603,11 +657,12 @@ sapply(x, mean)                     # sapply(data, function)!!!</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>We can see the total distance each airplane (unique tail numbers) flew with the following:</p>
+<p>We can see the total distance each airplane (unique tail numbers) flew with the following chained set of commands:</p>
 
 <pre class = 'prettyprint lang-r'>out &lt;- split(flights, flights$tailnum) %&gt;%
   sapply(function(d) sum(d$distance, na.rm=TRUE)) %&gt;%
-    sort(decreasing=TRUE) %&gt;% head(n=5)
+    sort(decreasing=TRUE) %&gt;% 
+      head(n=5)
 out</pre>
 
 <pre >##          N328AA  N338AA  N327AA  N335AA 
@@ -626,7 +681,7 @@ out</pre>
 ##     (chr)
 ## 1      AA</pre>
 
-<p>They were all American. (Why a data frame print ou?)</p>
+<p>They were all American. (Why a data frame print out?)</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -634,7 +689,8 @@ out</pre>
 
 <pre class = 'prettyprint lang-r'>out &lt;- split(flights, flights$carrier) %&gt;% 
   sapply(function(d) sum(d$distance, na.rm=TRUE)) %&gt;%
-           sort(decreasing=TRUE) %&gt;% head(n=5)
+     sort(decreasing=TRUE) %&gt;% 
+          head(n=5)
 out</pre>
 
 <pre >##       UA       DL       B6       AA       EV 
@@ -686,8 +742,9 @@ out</pre>
 <p>We can then chain things:</p>
 
 <pre class = 'prettyprint lang-r'>out = group_by(flights, carrier) %&gt;%   # no need to qualify `carrier`
-  summarize(dist = sum(distance)) %&gt;% 
-    arrange(desc(dist)) %&gt;% head(n=5)
+  summarize(dist = sum(distance)) %&gt;%  # summarize distances
+    arrange(desc(dist)) %&gt;%            # arrange sorts
+      head(n=5)                        # first 5 only
 out</pre>
 
 <pre >## Source: local data frame [5 x 2]

@@ -6,6 +6,7 @@ output: ioslides_presentation
 
 # Manipulating Data Containers
 
+## Manipulating Data Containers
 Storing data sets in data frames is very convenient, but with just the indexing notation, can make for cumbersome tasks. 
 
 Consider the following question (from UsingR): For the `normtemp` dataset perform a `t.test` for temperature by gender.
@@ -16,12 +17,19 @@ First, we load the data:
 
 ```{r}
 require(UsingR)    # only for this dataset, don't bother installing
+```
+
+----
+
+The data looks like:
+
+```{r}
 head(normtemp)
 ```
 
 ----
 
-We see gender is coded. The docs (?normtemp) say 1 for male 2 for female:
+We see gender is coded. The docs (?normtemp) say 1 for male 2 for female. Here we split the data to perform a "t test":
 
 ```{r}
 males <- normtemp[normtemp$gender == 1, "temperature"]
@@ -33,7 +41,7 @@ t.test(males, females)
 
 The pain comes from having to type so much for a task which should be simple: split the data and apply some function.
 
-For R's modeling functions, there is a syntax -- the  formula -- that is usually designed for this:
+For R's modeling functions, there is a syntax -- the  model formula -- that is usually designed for this:
 
 ```{r}
 t.test(temperature ~ gender, normtemp)
@@ -56,7 +64,8 @@ For these tasks we illustrate a few solutions, both with base R and with add-on 
 We will illustrate with two data sets, one modest, the other large
 
 ```{r}
-library(nycflights13); library(MASS)
+library(nycflights13)   ##  install.packages("nycflights13") is needed at some point
+library(MASS)           ## Built in package
 dim(flights)
 dim(Cars93)
 ```
@@ -91,7 +100,7 @@ summary(flights)
 
 ## Subsetting, Filtering of vectors
 
-What flights are JetBlue? We can see that the carrier variables is coded:
+What flights are JetBlue? We can see that the `carrier` variable is coded:
 
 ```{r}
 table(flights$carrier)
@@ -107,14 +116,14 @@ jb <- with(flights, flights[carrier=="B6", ]) # using with
 jb <- subset(flights, carrier == "B6")    # new function
 ```
 
-The shortest -- by a hair -- is the use of `subset`. This is a convenience function. Rather than describe that function, we mention similar one from  the `dplyr` package.
+The shortest -- by a hair -- is the use of `subset`. This is a convenience function. Rather than describe that function, we mention a similar one from  the `dplyr` package.
 
 ## Subsetting, Filtering data frames using `dplyr`
 
-The `dplyr` package provides some higher-level interfaces to indexing. For this task, filtering, we have the `filter` function.
+The `dplyr` package provides some higher-level interfaces to indexing. For this task, filtering our cases, we have the `filter` function.
 
 ```{r}
-library(dplyr)
+library(dplyr)   # ignore the many comments...
 ```
 
 ----
@@ -131,12 +140,15 @@ About the same, but we can make our queries much more involved:
 jb <- filter(flights, carrier == "B6", origin == "JFK")
 ```
 
-Values get combined with `&`. To use "ors", we can use `|`:
+In the above, values get combined with `&`.
+
+To use "ors", we can explicitly use `|`:
 
 ```{r}
 jb <- filter(flights, carrier == "B6" | origin == "JFK")
 ```
 
+(But not `&&` or `||` here, a common mistake)
 
 ----
 
@@ -156,6 +168,8 @@ no_air <- filter(flights, is.na(flights$air_time))
 dim(no_air)
 ```
 
+----
+
 Did any flights just turn around? (no)
 
 ```{r}
@@ -174,6 +188,7 @@ This can also use names for clarity:
 
 ```{r}
 nms <- names(Cars93)[c(1, 2, 11, 12, 13,14)]  # or type ...
+nms
 a <- Cars93[, nms]
 ```
 
@@ -184,19 +199,23 @@ If you want all *but* a variable, negative indexing is useful.
 The `select` function of `dplyr` makes this slightly nicer if typing, as it use non-standard evaluation of names:
 
 ```{r}
-a <- select(Cars93, Manufacturer, Model, Cylinders, EngineSize, Horsepower, RPM)
+a <- select(Cars93, Manufacturer, Model, 
+            Cylinders, EngineSize, Horsepower, RPM)
 ```
 
-If can also "fill in", the above covers two sequences:
+----
+
+It can also "fill in", the above covers two sequences:
 
 ```{r}
 a <- select(Cars93, Manufacturer:Model, Cylinders:RPM)
+head(a)
 ```
 
 
 ----
 
-At the *enormous* risk of confusing things, the built-in `Filter` function can also be helpful with this task. This function (note capital "F") reduces the elements of a vector or list to just those that satisfy some condition.
+At the **enormous** risk of confusing things, the built-in `Filter` function can also be helpful with this task. This function (note capital "F") reduces the elements of a vector or list to just those that satisfy some condition.
 
 An example would be a means to remove variables which are not numeric:
 
@@ -204,7 +223,7 @@ An example would be a means to remove variables which are not numeric:
 x <-Filter(is.numeric, Cars93)   # Filter(predicate, data)
 ```
 
-(lower case `filter` to filter rows, upper case to `Filter` columns)
+(lower case `filter` to filter rows, upper case to `Filter` columns, in a data frame.)
 
 ## Combining operations. We can combine these tasks:
 
@@ -218,6 +237,17 @@ The "piping" function in `dplyr` makes chaining distinct function calls pretty e
 a <- filter(flights, carrier == "B6") %>% select(distance)
 ```
 
+----
+
+Chaining (composing) versus monolithic calls.
+
+The last command could aslo have been done in one function call using base R's `subset` function:
+
+```
+a <- subset(flights, carrier=="B6", select=distance)
+```
+
+Which is more natural?
 
 ## Applying a function over a container
 
@@ -227,7 +257,7 @@ Earlier we mentioned that R vectorizes function calls so that this:
 [x1 x2 ... xn] -> [f(x1) f(x2) ... f(xn)]
 ```
 
-is simply `f(x)`.
+is simply `f(x)`. (When `f` is not a reduction.)
 
 Can we do something similar for other containers? For example, lists?
 
@@ -244,6 +274,7 @@ In general this is called a "map". R has the `Map` function, but more commonly y
 
 The different names are because there are various means to apply a function over the rows or columns of a matrix or data frame and over components of a list.
 
+(The popular `plyr` package has many similar functions distinguished by the data types: `ddply`, `adply`, ...)
 
 ## sapply
 
@@ -267,14 +298,26 @@ Earlier we saw that `summary` can be applied to data frames. This function also 
 sapply(flights, summary)
 ```
 
+----
+
+Note that one output was a *vector*, the other a *list*. 
+
+Part of the task of `sapply` (the "s" part) is to *simplify* the output. 
+
+Vectors are "simpler" than lists, so if possible the data is massaged into a vector.  
+
+The `lapply` function always returns a list, as does `Map`.
+
 
 ## Basics of functions
 
-These are [higher-order](https://en.wikipedia.org/wiki/Higher-order_function) functions. We pass in the name of a function. Often these are already defined for us, but there are times where we would want to define our own. For example, one way to remove NA values before computing the mean is to set the argument `na.rm=TRUE`. It is false by default. We could do this:
+The functions `sapply`, `Map`, `lapply`, ... are [higher-order](https://en.wikipedia.org/wiki/Higher-order_function) functions. For one of the arguments, we pass in  a function object by name (or anonymously). Often these functions are already defined for us (e.g., `is.numeric`), but there are times where we would want to define our own. For example, one way to remove NA values before computing the mean is to set the argument `na.rm=TRUE`. It is false by default. We could do this:
 
 ```{r}
 our_mean <- function(x) mean(x, na.rm=TRUE)
 ```
+
+----
 
 Then we can use:
 
@@ -290,7 +333,7 @@ This task of setting an argument to a function is common enough that `sapply` pe
 sapply(Filter(is.numeric, Cars93),  mean, na.rm=TRUE)
 ```
 
-But being able to define quick functions is very useful.
+But being able to define simple functions is very useful.
 
 ## Functions: basic
 
@@ -303,7 +346,7 @@ fn_name <- function(x) {
 }
 ```
 
-In our previous example, we only have one command we do so braces were optional.
+In our previous example, we only have one command, so the braces were optional.
 
 
 ## anonymous functions
@@ -327,7 +370,7 @@ First, splitting. Base R has the command `split` that can be used to create a li
 by_origin <- split(Cars93, Cars93$Origin)
 ```
 
-The `by_origin` variable is a list with two components: one for `USA` and one `non-USA`. If we wanted we could apply a function to teach. 
+The `by_origin` variable is a list with two components: one for `USA` and one `non-USA`. If we wanted we could apply a function to each. 
 
 ----
 
@@ -349,12 +392,13 @@ sapply(by_origin, function(d) mean(d$MPG.highway))
 
 ---- 
 
-We can see the total distance each airplane (unique tail numbers) flew with the following:
+We can see the total distance each airplane (unique tail numbers) flew with the following chained set of commands:
 
 ```{r}
 out <- split(flights, flights$tailnum) %>%
   sapply(function(d) sum(d$distance, na.rm=TRUE)) %>%
-    sort(decreasing=TRUE) %>% head(n=5)
+    sort(decreasing=TRUE) %>% 
+      head(n=5)
 out
 ```
 
@@ -367,7 +411,7 @@ with(flights, flights[tailnum == names(out)[-1], "carrier"]) %>%
   unique
 ```
 
-They were all American. (Why a data frame print ou?)
+They were all American. (Why a data frame print out?)
 
 ----
 
@@ -376,7 +420,8 @@ Hmm, interesting. Can we get the distance traveled by carrier?
 ```{r}
 out <- split(flights, flights$carrier) %>% 
   sapply(function(d) sum(d$distance, na.rm=TRUE)) %>%
-           sort(decreasing=TRUE) %>% head(n=5)
+     sort(decreasing=TRUE) %>% 
+          head(n=5)
 out
 ```
 
@@ -401,8 +446,9 @@ We can then chain things:
 
 ```{r}
 out = group_by(flights, carrier) %>%   # no need to qualify `carrier`
-  summarize(dist = sum(distance)) %>% 
-    arrange(desc(dist)) %>% head(n=5)
+  summarize(dist = sum(distance)) %>%  # summarize distances
+    arrange(desc(dist)) %>%            # arrange sorts
+      head(n=5)                        # first 5 only
 out
 ```  
 
