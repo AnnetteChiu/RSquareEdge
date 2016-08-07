@@ -41,9 +41,9 @@ Many users think of R as a statistics system. We prefer to think of it of an env
 Kaiser mentioned that I could cover material from a talk given in 2005. In reviewing that I saw that R had about 400 add-on packages. Today it is over 7000. It has between 1 and 2 million users. It is used by several companies, such as the New York Times (where R based graphics appear with some frequency).
 
 
-## Our goals for these two sessions
+## Our goals for these three sessions
 
-We intend to cover topics on data and manipulations of data.
+We intend to cover topics on data, manipulations of data, and functions.
 
 Some (free and not free) resources for this material:
 
@@ -151,11 +151,13 @@ library(dplyr)
 
 ## Outline
 
-Okay, with these preliminaries out of the way, the plan is to talk about 3 things:
+Okay, with these preliminaries out of the way, the plan is to talk about 4 things:
 
 * Different types of data
 
 * Different types of containers for data
 
 * Different ways to slice and dice these containers to analyze the data.
+
+* Using functions to organize our work
 

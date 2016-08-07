@@ -1,0 +1,856 @@
+---
+title: "Functions and program organization in R"
+output: ioslides_presentation
+---
+
+
+
+# Functions and program organization
+
+The goal of today's notes is to go over one way to organize your work within `R`.
+
+Let's begin with an example, how to use NYC's 311 open data base from within R.
+
+
+## NYC OpenData
+
+The City of New York has data sets available for all to use. One such is
+
+(311 Service Requests from 2010 to Present)[https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9]
+
+
+This entire data set is pretty large -- over 300M compressed. As such, downloading the entire data set and working with it in memory is not so practical.
+
+(Just updating a 500M data set, requires at least twice the storage, as copies are made.)
+
+There are alternatives, but here we will discuss how to use a URL to pre-filter the data we fetch into R
+
+## the SODA consumer API
+
+For more information on how to access this dataset via the Socrata Open Data API:
+
+[Socrata](https://dev.socrata.com/foundry/data.cityofnewyork.us/fhrw-4uyv)
+
+
+Basically, one can cook up a url that can be used to return matching records in JSON format. (Or others, such as XML or CSV).
+
+
+Let's look at an example session (the `script.R` file in this directory)
+
+## recent additions
+
+Load some packages (`jsonlite` to parse JSON outputs; `dplyr` for manipulation of data frames; `lubridate` to work with dates; `magrittr` to tidy up some code):
+
+```{r}
+require(jsonlite)
+require(dplyr)
+require(lubridate)
+require(magrittr)
+```
+
+## Grab the last two days
+
+We can easily create `POSIXct` times using `lubridate` functions:
+
+```{r}
+d2 = now()
+d1 = d2 - days(2)  ## grab last two days
+c(d1, d2)
+```
+
+These are converted into the time format Socrata wants as follows:
+
+```{r}
+d1 = sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d1), month(d1), day(d1), hour(d1), minute(d1), second(d1))
+d2 = sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d2), month(d2), day(d2), hour(d2), minute(d2), second(d2))
+c(d1, d2)
+```
+
+##
+
+The data set has a `created_date` field we will work against. All fields are listed [here](https://dev.socrata.com/foundry/data.cityofnewyork.us/fhrw-4uyv).
+
+```{r}
+baseurl = "https://data.cityofnewyork.us/resource/fhrw-4uyv.json"
+query = sprintf("%s?$where=created_date between '%s' and '%s'",
+	baseurl, d1, d2)
+query
+```
+
+We should encode the query. Within the browser it isn't necessary, but my version of `R` required this. There is a built in `URLencode` function:
+
+```{r}
+query = URLencode(query)
+query
+```
+
+##
+
+But that doesn't handle the conversion of `'` to %27`:
+
+```{r}
+query = gsub("'", "%27", query)
+query
+```
+
+(not ideal -- can't handle "can't" ...)
+
+## grabbing the data
+
+Requesting this URL returns a JSON file
+
+[query](`r query`)
+
+To convert this to a data frame, the *super* convenient `fromJSON` function works:
+
+```{r}
+a = fromJSON(query)   ## large queries can take a while to download
+```
+
+##
+
+```{r}
+head(a)
+```
+
+## Some analysis
+
+What kinda things to people call 311 about? We look at the `complaint_type` variable.
+
+Top 6 issues are:
+
+```{r}
+table(a$complaint_type) %>% sort %>% tail
+```
+
+## Let's try and visualize the most common complaint: Noise - Residential
+
+First we try to filter:
+
+```
+filter(a, complaint_type == "Noise - Residential")
+```
+
+```
+Error: Each variable must be a 1d atomic vector or list.
+Problem variables: 'location'
+```
+
+## An error
+
+What gives? Let's look
+
+```{r}
+class(a$location)
+```
+
+## get rid of complicated data frame variable -- it is rendundant here anyways:
+
+```{r}
+a$location <- NULL
+noisy_neighbors <- filter(a, complaint_type == "Noise - Residential")
+tbl_df(noisy_neighbors)
+```
+
+## Where are they?
+
+Mapping is always a fun visualization. For mapping we have `RgoogleMaps`. Let's see if we can just borrow and adjust someone's [example](https://www.r-bloggers.com/heatmap-of-toronto-traffic-signals-using-rgooglemaps/)
+
+```{r}
+require(RgoogleMaps)
+noisy_neighbors[["longitude"]] = as.numeric(noisy_neighbors[["longitude"]])
+noisy_neighbors[["latitude"]] = as.numeric(noisy_neighbors[["latitude"]])
+
+center <- sapply(select(noisy_neighbors, latitude, longitude),
+	mean, na.rm=TRUE)
+map <- GetMap(center=center, zoom=11)
+```
+
+## Translate original data to that based on the map object
+
+```{r}
+coords <- with(noisy_neighbors,
+	LatLon2XY.centered(map, latitude, longitude, 11))
+coords <- data.frame(coords)
+```
+
+## Make a plot
+
+```{r}
+PlotOnStaticMap(map)
+points(coords$newX, coords$newY, pch=16, cex=0.3)
+```
+
+## As usual -- we tweak.
+
+Giving a default `zoom` level is an issue. We'd rather have the map zoom to just include our data. For that we have the bounding box concept. Looking into the `RgoogleMaps` documentation we find there is a `GetMap.bbox` function -- we just need to make a bounding box and go:
+
+```{r}
+bb <- with(noisy_neighbors, qbbox(latitude, longitude))
+map <- GetMap.bbox(bb$latR, bb$lonR)
+```
+
+And again
+
+```{r}
+coords <- with(noisy_neighbors,
+	LatLon2XY.centered(map, latitude, longitude)) # no zoom level here
+coords <- data.frame(coords)
+```
+
+##
+
+```r
+PlotOnStaticMap(map)
+with(coords, points(newX, newY, pch=16, cex=0.3))
+```
+
+## What the?
+
+Well, we see that `GetMap.bbox` uses the order lon, lat -- not lat, lon like the others! This should be better:
+
+```{r}
+map <- GetMap.bbox(bb$lonR, bb$latR)
+coords <- with(noisy_neighbors,
+	LatLon2XY.centered(map, latitude, longitude))
+coords <- data.frame(coords)
+```
+
+##
+
+```r
+PlotOnStaticMap(map)
+with(coords, points(newX, newY, pch=16, cex=0.3))
+```
+
+## Narrowing a search
+
+Hmm, lots of noise in Brooklyn, not so much in SI. Maybe people new to the city complain more? Let's peek by narrowing down a neighborhood -- Williamsburg.
+
+A quick peek at GoogleMaps shows me that a center is basically:
+
+```{r}
+lat = 40.7104541
+lon = -73.9644729
+```
+
+From [usgs](https://www2.usgs.gov/faq/categories/9794/3022) we see that one minute of latitude at 38 degrees N is basially 1.15 miles. So a block is basically `1/60/15 =` `r 1/60/15`.
+
+```{r}
+lats = c(lat - 0.001, lat + 0.001)
+lons = c(lon - 0.001, lon + 0.001)
+```
+
+## `within_box`
+
+The previously annoying `location` variable is actually valuable *server side*. The `within_box` query can be used to pick out only those records that happened within a box:
+
+```{r}
+condition_1 <- sprintf("within_box(location, %2.6f, %2.6f, %2.6f, %2.6f)",
+	lats[1], lons[1], lats[2], lons[2])
+condition_2 <- sprintf("complaint_type='Noise - Residential'")
+```
+
+We put this into a query:
+
+```{r}
+query = sprintf("%s?$where=%s and %s", baseurl, condition_1, condition_2)
+query = URLencode(query)
+query = gsub("'", "%27", query)
+query
+```
+
+##
+
+```{r}
+a = fromJSON(query)
+```
+
+```{r}
+a$location <- NULL
+tbl_df(a)
+```
+
+## when
+
+Let's look at the creation dates of these complaints. We have:
+
+```{r}
+head(a$created_date)  # characters
+```
+
+Coercion is easy -- `lubridate` does all the hard work:
+
+```{r}
+a$created_date <- ymd_hms(a$created_date) # R date-time format
+```
+
+## visualize
+
+Let's try a simple visualization a count by month and year:
+
+```{r}
+xtabs(~ month(created_date) + year(created_date), a)
+```
+
+
+## Tidying up work using functions
+
+This was meant to simulate how one might work interactively at the command line or with a script. We bounce along thought to thought. While this isn't bad, it is helpful to go back over and think how we could do things more efficiently/easily.
+
+Usually this involves creating functions.
+
+##
+
+For example, we had these two *nearly* identical commands to convert a `POSIXct` time into the timestamp format expected by Socrata:
+
+```
+d1 = sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d1), month(d1), day(d1), hour(d1), minute(d1), second(d1))
+d2 = sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d2), month(d2), day(d2), hour(d2), minute(d2), second(d2))
+```
+
+We clearly see a template (the `d1` and `d2` values are all that are replaced.) When we use copy-and-paste to create new commands, just slightly modifying things we should be thinking: write  a function:
+
+```{r}
+posix_to_timestamp <- function(d) {
+    sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d), month(d), day(d), hour(d), minute(d), second(d))
+}
+```
+
+(There is also `strftime` that is designed for this conversion, but `sprintf` is of wider utility.)
+
+##
+
+Testing our function to see it is vectorized:
+
+```{r}
+posix_to_timestamp(c(now()-days(2), now()))
+```
+
+## Functions -- the template
+
+Functions are defined by the `function` keyword. They have two visible things: a set of arguments, the body:
+
+```
+function(...arguments...) {
+	...body...
+}
+```
+
+A third is an *environment* where variables within the body are found.
+
+
+## Similarly
+
+We repeated the following code:
+
+```
+query <- URLencode(query)
+query <- gsub("'", "%27", query)
+```
+
+Repeated code should also lend itself to a function:
+
+```{r}
+encodeURL <- function(query) {
+    query <- URLencode(query)
+    query <- gsub("'", "%27", query)  # XXX fails on "can't" ...
+    query
+}
+```
+
+(This one could be improved! -- but that takes us far a field.)
+
+## arguments
+
+In the past two example, we have functions that take a single argument, so the usage is pretty clear -- when the body refers to the variable it uses the value passed to the function when it is called.
+
+Functions in `R` are not limited to single value, in fact many functions have *too* many arguments.
+
+Arguments can be passed to functions in `R` in various ways:
+
+* by position: `log(10, 2)` and `log(10, 10)` give different answers -- the second argument is for the base
+
+* by name: `log(10, base=2)` and `log(10, base=10)` (base is the name of the second argument, so these are identical
+
+However, we can also name both arguments and mix order:
+
+```{r}
+c(log(10, 2), log(10, base=2), log(base=2, x=10))
+```
+
+## default arguments
+
+The signature of `log` is `log(x, base = exp(1))`.
+
+What does the `base = exp(1)` do? It provides a default if no base value is specified.
+
+These defaults are evaluated *lazily* -- not when the function is defined, not when the function is called, rather when the value is needed. This allows one to make defaults that depend on values:
+
+```{r}
+Log = function(x, base=x)  log(x, base)
+Log(10)        # in fact log_x(x) = 1 always when x > 0
+```
+
+## Another function
+
+We have queries and the base url. A function to combine them might be:
+
+```{r}
+query_to_url <- function(query) {
+   sprintf("%s?$where=%s", baseurl, query)
+}
+```
+
+Seems simple enough -- but where is the value of `baseurl` found if it isn't passed in?
+
+
+## the environment
+
+R uses nested `environments` to look up values for variable names. When a function is defined, the body has an environment consisting of the local variables for the function call.
+
+The is a distinction between the environment the function is defined in and the environment of the call. This can be of importance when functions call other functions, but we won't see that here.
+
+What happend in `query_to_url` is `baseurl` is not found in the environment of local variables, but rather it must be found in an enclosing environment. So we must have defined it. Using a constant is one way to do this, as was done in the script.
+
+A closure is a formal name for the function's arguments, body and environment. Closures are useful for certain programming tasks, but not for this task at hand.
+
+## SODA queries
+
+We saw three types of queries: a range of times, within a bounding box, matching a level for a field. There are many more. Making an nice interface for that might be helpful.
+
+(Had we downloaded the *entire* data set, we could just use subsetting and filtering to slice and dice the data R side, but here we want to filter our request, so use the SODA commands.)
+
+Three possible helpful functions might be:
+
+##
+
+```{r}
+soda_character <- function(var, val) {
+    sprintf("%s='%s'", var, val)  ## could use shQuote(val) and just %s ...
+}
+```
+
+
+##
+
+```[r}
+
+soda_date <- function(var, from, to=NULL) {
+    if (is.null(to)) {
+        sprintf("%s>='%s'", var, posix_to_timestamp(from))
+    } else {
+        sprintf("%s between '%s' and '%s'", var, posix_to_timestamp(from), posix_to_timestamp(to))
+    }
+}
+```
+
+##
+
+(Here `var` is a some type of [object](https://dev.socrata.com/docs/functions/within_box.html),  location is a `Point`)
+
+```{r}
+soda_bbox <- function(var, lats, lons) {
+    sprintf("within_box(%s, %2.6f, %2.6f, %2.6f, %2.6f)", var, lats[1], lons[1], lats[2], lons[2])
+}
+```
+
+Then we have, say:
+
+```{r}
+soda_character("complaint_type", "Noise - Residential")
+```
+
+Not as slick as indexing with `complaint_type == "Noise - Residential", but not too bad.
+
+## But...
+
+This is kind of ugly:
+
+* we have 3 functions that basically do the same action
+
+* **we** need to mentally keep track of the names for the class of each value we want to use.
+
+* shouldn't the computer help here?
+
+## S3 functions, polymorphism
+
+Computer languages are now designed to minimize the taxing of the brain, if they can. In this case, we can use one function name to call 3 different functionalities and let the computer decide which *based* on the class of the value:
+
+* character data should use `soda_character`
+* date data should use `soda_date`
+* bounding box data should use `soda_bbox`
+
+## Polymorphism in R
+
+R has *many* different programming styles that implement polymorphism:
+
+* S3 -- the oldest (early 90s). Easiest by far, but requires following conventions
+* S4 -- more modern (early 00s). More robust, but more tedious
+* Reference Classes -- more like classic oo programming of other languages
+* [R6](https://cran.r-project.org/web/packages/R6/vignettes/Introduction.html) -- faster reference classes
+* `proto` -- older, one of first with different semantics
+
+## S3 conventions
+
+If you bless a function name, then the following pattern will be used when the variable `x` matches the specified `class`:
+
+```
+fn.class_name <- function(x, ...) { ... }
+```
+
+So we *specialize* this function defintion to calls where `x` is of the specified class.
+
+##
+
+For example, "tab-completing" `plot` has these by *default*
+
+```
+plot.default         plot.new             plot.ts
+plot.design          plot.spec.coherency  plot.window
+plot.ecdf            plot.spec.phase      plot.xy
+plot.function        plot.stepfun
+```
+
+Among others, we see:
+
+* `default`: the catch all definitin
+* `new`: actually shows how the naming is just a convention. There is no `new` class.
+
+##
+
+We should instead call `methods`:
+
+```{r}
+methods(plot)
+```
+
+## Okay, let's use this to simplify our soda calls:
+
+Bless the function name:
+
+```{r}
+Soda <- function(x,...) UseMethod("Soda")
+```
+
+`UseMethod` is the circus master that controls the dispatch.
+
+
+##
+
+Then we have:
+
+```{r}
+Soda.character <-  function(val, var) {
+    sprintf("%s='%s'", var, val)  ## could use shQuote(val) and just %s ...
+}
+```
+
+Very similar -- but `val` and `var` are switched (a bit unnaturally!)
+
+## `in`
+
+Thinking in terms of vectorization, we might get passed a vector of values for val. Let's use the `in` feature of `SoQL`:
+
+```{r}
+Soda.character <- function(val, var) {
+  vals = paste(shQuote(val), collapse = ", ")
+  sprintf("%s in(%s)", var, vals)
+}
+```  
+
+
+## and
+
+```{r}
+Soda.POSIXct <- function(from, var, to=NULL) {
+    if (is.null(to)) {
+        out <- sprintf("%s>='%s'", var, posix_to_timestamp(from))
+    } else {
+        out <- sprintf("%s between '%s' and '%s'", var, posix_to_timestamp(from), posix_to_timestamp(to))
+    }
+    out
+}
+```
+
+## or
+
+(We might also have written this using `from` as a length 1 or 2 vector. Then we would have something like:
+
+```
+sprintf("%s %s %s", var, ifelse(length(from) = 1, ">=", "between"), paste(shQuote(x), collapse=" and "))
+```
+
+This gives a cleaned up version:
+
+```{r}
+Soda.POSIXct <- function(vals, var) {
+  
+  if (length(vals) > 1) 
+    vals <- vals[1:2]
+  compare_with <- ifelse(length(vals) == 1, ">=", "between")
+  
+  sprintf("%s %s %s", var, compare_with, paste(shQuote(x), collapse=" and "))
+}
+```
+
+The advantage here is the consistent calling pattern -- makes it easier for users to not make mistakes.
+
+## Bounding box
+
+What to do about the bounding box. We have no bounding box class. Can we make one?
+
+Well it is *too* easy -- classes too are just a naming convention. Objects have an attribute `class`, a character vector. We can just push a name to the top. This *constructor*, `bbox`, creates a `BBOX` object:
+
+```{r}
+bbox <- function(lats, lons) {
+    lats <- range(as.numeric(lats), na.rm=TRUE)
+    lons <- range(as.numeric(lons), na.rm=TRUE)
+    
+    out <- c(lats[1], lons[1], lats[2], lons[2])
+    class(out) <- c("BBOX", class(out))  ## <--- why?
+    out
+}
+```
+
+##
+
+With this, we can use dispatch:
+
+```{r}
+Soda.BBOX <- function(b, var) {
+    sprintf("within_box(%s, %2.6f, %2.6f, %2.6f, %2.6f)", var, b[1], b[2], b[3], b[4])
+}
+```
+
+Add we have, for example:
+
+```
+Soda(bbox(a$latitude, a$longitude))
+```
+
+## Queries
+
+The above helps us make one query. But it is much more natural to combine queries. In indexing notation, we use `&` and `|` to combine logical expressions. Can we do the same?
+
+Well, `R` lets us define `&` and `|` using the *same* S3 conventions. So we just need a class to control dispatch:
+
+```{r}
+Query <- function(x) {
+    class(x) <- c("Query", class(x))
+    x
+}
+```
+
+##
+
+Great, we could go back and *edit* each of our `Soda` functions to return a `Query` object, but instead we use a wrapper function. This also allows us to verify the name:
+
+```{r}
+varnames <- c('address_type', 'agency', 'agency_name', 'borough', 'city', 'closed_date', 'community_board', 'complaint_type', 'created_date', 'cross_street_1', 'cross_street_2', 'descriptor', 'due_date', 'facility_type', 'incident_address', 'incident_zip', 'latitude', 'location.type', 'location', 'location_type', 'longitude', 'park_borough', 'park_facility_name', 'resolution_action_updated_date', 'resolution_description', 'school_address', 'school_city', 'school_code', 'school_name', 'school_not_found', 'school_number', 'school_phone_number', 'school_region', 'school_state', 'school_zip', 'status', 'street_name', 'unique_key', 'x_coordinate_state_plane', 'y_coordinate_state_plane') # hard code list
+varnames <- sapply(varnames, identity, simplify=FALSE)
+
+## return full name or stop if not a partial match
+verify_name <- function(nm) {
+    out <- varnames[[nm, exact=FALSE]]  ## use partial matching. More directly, could use `charmatch`.
+    if (is.null(out))
+        stop(nm, " does not match")
+    out
+}
+```
+
+## and then
+
+```{r}
+soda <- function(x, var, ...) {
+	if (length(var) > 1) warning("Only one variable at a time, first one being used.")
+    Query(Soda(x, verify_name(var[1]), ...))
+}
+
+"&.Query" <- function(x, y)  Query(paste(x, y, sep=" and "))
+"|.Query" <- function(x, y)  Query(paste(x, y, sep=" or "))
+```
+
+And we have:
+
+```{r}
+soda(bbox(a$latitude, a$longitude), "location") & soda("Noise - Residential", "created_d")
+```
+
+## The request
+
+There is a package for querying [RSocrata](https://github.com/Chicago/RSocrata), but it is more concerned about getting the data, than constructing the query. There is a more robust means to download files there, but we will stick the magical `fromJSON`. But we would like to tidy up our downloaded files:
+
+```{r}
+tidy_up <- function(d) {
+    d$location <- NULL # clean up
+    for (nm in c("created_date", "due_date"))
+        d[[nm]] <- ymd_hms(d[[nm]])
+    for (nm in c("latitude", "longitude"))
+        d[[nm]] <- as.numeric(d[[nm]])
+    d
+}
+```
+
+##
+
+And then we can make a `request` with the following. (There is a bit more here than is needed.)
+
+```{r}
+request <- function(query) {
+    urls <- sprintf("%s?$where=%s", baseurl, query)
+    urls <- sapply(urls, encodeURL)
+    out <- Reduce(rbind, lapply(urls, fromJSON))  # vectorized, just df_request(url)  otherwise
+    out <- tidy_up(out)
+    class(out) <- c("Response", class(out))
+    out
+}
+```	
+
+## Visualize the output
+
+The use of GoogleMaps to visualize the request is nice. We can make it the *default* plotting method for our requests as follows:
+
+```{r}
+plot.Response <- function(a, pch=16, cex=0.3, ...) {
+    bb <- with(a, qbbox(latitude, longitude))
+    map <- GetMap.bbox(bb$lonR, bb$latR)
+    
+    ## Translate original data
+    coords <- with(a, LatLon2XY.centered(map, latitude, longitude))
+    coords <- data.frame(coords)
+    
+                                        # Plot
+    PlotOnStaticMap(map)
+    with(coords, points(newX, newY, pch=pch, cex=cex, ...))
+    
+}
+```
+
+## In action
+
+```{r}
+lat = 40.7104541
+lon = -73.9644729
+query = soda(bbox(lat + 0.001 * c(-1,1), lon + 0.001 * c(-1,1)), "location") &
+  soda("Noise - Residential", "complaint_type")
+a = request(query)
+plot(a)  
+```
+
+
+## More formally organizing code into packages
+
+This example naturally lends itself to more generalizations:
+
+* more visualizations
+
+* taking advantage of the different query types available
+
+If this were to be pursued with the intent of sharing it with others, we would want to "package" up the work.
+
+## R packages
+
+We have seen how to
+
+* *install*  external packages in `R`
+
+* *load* external package in `R`
+
+Both tasks are fairly painless. Now we see how to **make** an external package.
+
+The hardest part is --- a good name! We will use the `the311`.
+
+## Devtools
+
+Package development in R is greatly assisted by the *devtools* package.
+
+RStudio's Projects make it easy to create a new package when working on a *new* project. Basically it puts a call into
+
+```
+devtools::create("the311")
+```
+
+This makes a directory with minimal directory structure to be a package.
+
+## First things first
+
+* edit the `DESCRIPTION` file
+
+* navigate to the `R` subdirectory and create the necessary files
+
+## Tougher than it looks
+
+Some packages use one big file to hold everything, others use small files arranged around different tasks.
+
+The latter is better for packages that may grow, the former maybe better as a package is being developed.
+
+`the311` uses the latter. (see)
+
+## order
+
+By default, R uses the alphabetical order of the files to determine which file is loaded first. This can lead to files named `aaa.R` or `zzz.R`. Kinda ugly.
+
+The `devtools` package gives directives which can make one file depend on another, hence the dependent file will load later. Looking at the example we have lines like:
+
+```
+##' @include utils.R
+NULL
+```
+
+The comment character is trailed by a `'` which is important. This uses the `roxygen` documentation format, but here we aren't actually documenting anything, so we put in the `NULL` as a trick.
+
+## Loading a package during development
+
+Packages must be loaded. One development cycle is: load the package, edit the package, install the package, restart R, load the package ...
+
+This can get tedious. `Devtools` provides `load_all` to temporarily install the package and avoid restarting R.
+
+```
+load_all(pkgname)
+```
+
+## Testing it out
+
+```
+load_all("the311")
+```
+
+```{r}
+lat = 40.7104541
+lon = -73.9644729
+query = soda(bbox(lat + 0.001 * c(-1,1), lon + 0.001 * c(-1,1)), "location") &
+  soda("Noise - Residential", "complaint_type")
+a = request(query)
+plot(a, cex=2)
+```
+
+
+## Public or Private
+
+When using `load_all` every function in the package is available.
+
+This is not the case if we had installed `the311` and loaded it using `require`.
+
+Then only **exported** functions are immediately visible to the user.
+
+As exported functions can *mask* other packages functions or names, package developers *should* be conservative in what they export, and should re-use common names. (Such as `plot` for the default plot.)
+
+Marking a function for export can be done using `roxygen` with the `@export` directive.
+
+## roxygen
+
+After mentioning it twice, `roxygen` gives a relatively simple way to document the functions in your package so that it is accessible to users of the package. The format is fairly simple:
+
+* document what the function does
+
+* document arguments (parameters)
+
+* document if it is exported
+
+* optionally give details, examples, notes, references.
+
+Documentation isn't limited to functions.
+
+Good documentation is hard to write, but there should be at least *bad* documentation.
+

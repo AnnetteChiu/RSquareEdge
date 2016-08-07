@@ -476,10 +476,6 @@ x == 5
 More generally, to coerce an object of one class into another, we have the `as(obj, classname)` function:
 
 ```{r}
-as(1.0, "factor")
+as(1.0, "character")
 ```
-
-## Questions
-
-XXX
 

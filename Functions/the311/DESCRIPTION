@@ -1,0 +1,16 @@
+Package: the311
+Title: query the 311 database
+Version: 0.0.0.9000
+Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Description: query the 311 database
+Depends:
+    R (>= 3.3.1)
+License: GPL
+Encoding: UTF-8
+LazyData: true
+Collate:
+    'utils.R'
+    'query.R'
+    'request.R'
+    'the311.R'
+    'visualize.R'

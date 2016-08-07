@@ -7,6 +7,7 @@ read the HTML online, follow these links:
 * [Data Types](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/datatypes.html)
 * [Data Containers](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/containers.html)
 * [Data Manipulations](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/manipulating-containers.html)
+* [Functions](http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/Functions/functions.html)
 
 
 Some questions on this material are here: 

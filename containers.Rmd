@@ -24,11 +24,15 @@ $n$d   array            .
 
 ## Vectors
 
-In R the difference between a (scalar) number and a vector is nothing (as there are no scalar values), but by presenting vectors as a container, we can naturally introduce other containers.
+In R the difference between a (scalar) number and a vector is nothing
+(as there are no scalar values), but by presenting vectors as a
+container, we can naturally introduce other containers.
 
 What is a vector?
 
-> A vector is a container holding n items all of the same type. The items or ordered using 1-based indexing. Vectors may be constructed by combining them with the `c` function
+> A vector is a container holding n items all of the same type. The
+> items are ordered using 1-based indexing. Vectors may be constructed
+> by combining them with the `c` function.
 
 ----
 
@@ -51,7 +55,8 @@ now() + weeks(c(1,2,3,4))
 
 ----
 
-Vectors must consist of elements all of the same type. If we try to construct one of a different type, the values will be coerced:
+Vectors must consist of elements all of the same type. If we try to
+construct one of a different type, the values will be coerced:
 
 ```{r}
 c(TRUE, 0, 1)          # TRUE -> 1 (FALSE -> 0)
@@ -86,7 +91,7 @@ More generally `numeric(10)` will produce a vector of length 10 with default val
 
 ## Vector attributes, Names
 
-Vectors can have attributes. A common one is to give names:
+Vectors can have attributes. A common one is to give the values names:
 
 ```{r}
 x <- c("one"= 1, "two" = 2, "three" = 3)
@@ -96,13 +101,13 @@ names(x)
 
 ----
 
-These values can be changed:
+Attribute values can be changed:
 
 ```{r}
 names(x) <- toupper(names(x))
 ```
 
-(This uses `names` on *both* sides...)
+(This uses `names` on *both* sides -- one to get and one to set.)
 
 
 ## Attributes: class
@@ -113,7 +118,7 @@ Another attribute of a vector is its class. This information is used when functi
 class(x)
 ```
 
-This attribute can be modified and new classes can be easily created.
+This attribute can be modified and new classes can be easily created. We will see why this is useful when we talk about functions.
 
 
 ## Basic indexing
@@ -285,9 +290,12 @@ A billing point of R was
 
 > a suite of operators for calculations on arrays, in particular matrices
 
-A matrix, like a vector, is a homogeneous collection of values. They are viewed as a rectangular, two-dimensional array. Arrays are their higher-dimensional counterpart.
+A matrix, like a vector, is a homogeneous collection of values. They
+are viewed as a rectangular, two-dimensional array. Arrays are their
+higher-dimensional counterpart.
 
-Matrices are widely used mathematical objects and have their own algebraic properties.
+Matrices are widely used mathematical objects and have their own
+algebraic properties.
 
 In R matrices can also be used as containers for storing data.
 
@@ -295,7 +303,8 @@ In R matrices can also be used as containers for storing data.
 
 ----
 
-Consider a class of 100 students. Some did and didn't do their HW, some did and didn't pass. The distribution can be put into a table:
+Consider a class of 100 students. Some did and didn't do their HW,
+some did and didn't pass. The distribution can be put into a table:
 
 HW \\ pass  Passed Failed
 ----------  ------ ------
@@ -305,7 +314,8 @@ No            20     20
 
 ----
 
-These numbers are naturally arranged in a two dimensional array of numbers -- matrix. In R the `matrix` function can do so:
+These numbers are naturally arranged in a two dimensional array of
+numbers -- matrix. In R the `matrix` function can do so:
 
 ```{r}
 grades <- matrix(c(50,20, 10, 20), nrow=2)
@@ -391,17 +401,26 @@ grades[1,]
 
 ----
 
-It would appear not. But in fact they are. The issue here is the R will drop dimensions on the returned object. So each of the above is a vector, for which only names makes sense, not names along dimensions. One can explicitly request no dimensions be dropped:
+It would appear not. But in fact they are. The issue here is the R
+will drop dimensions on the returned object. So each of the above is a
+vector, for which only names makes sense, not names along
+dimensions. One can explicitly request no dimensions be dropped:
 
 ```{r}
 grades[1,2, drop=FALSE]
 ```
 
-This is pointed out as it highlights design choices. For interactive use, dropping dimensions is typically desirable. For programming, that needn't be the case (as it leads to having to check for different cases).
+This is pointed out as it highlights design choices. For interactive
+use, dropping dimensions is typically desirable. For programming, that
+needn't be the case (as it leads to having to check for different
+cases).
 
 ## Tables
 
-As seen tables are a useful application of matrices beyond the mathematical sense. While we are here, we mention that there are two common table making functions: `table` and `xtabs`. The table command takes two vectors:
+As seen tables are a useful application of matrices beyond the
+mathematical sense. While we are here, we mention that there are two
+common table making functions: `table` and `xtabs`. The table command
+takes two vectors:
 
 ```{r}
 gender <- c("male", "male", "male", "female", "female")
@@ -559,9 +578,14 @@ simpsons
 
 ## Data frames: Row and column names
 
-A data frame is a list, so its components (the variables) can have `names`. The `colnames` function can set them. (As can `names`.) In the above, they are set when we call `data.frame`. Column names need not be unique, but that is suggested.
+A data frame is a list, so its components (the variables) can have
+`names`. The `colnames` function can set them. (As can `names`.) In
+the above, they are set when we call `data.frame`. Column names need
+not be unique, but that is suggested.
 
-A data frame is a list of variable each having the same of cases **and** unique row names. The default, as seen above, is the row index (as a character):
+A data frame is a list of variable each having the same of cases
+**and** unique row names. The default, as seen above, is the row index
+(as a character):
 
 ```{r}
 rownames(simpsons)
@@ -608,7 +632,10 @@ This is called "filtering" a topic we will revisit.
 
 ## Data frames: other means of construction
 
-While data frames can be constructed, it is common to read them into R. There are many functions in R for reading external files. The `read.csv` file is one. Here we see it used to read in a file from the internet:
+While data frames can be constructed, it is common to read them into
+R. There are many functions in R for reading external files. The
+`read.csv` file is one. Here we see it used to read in a file from the
+internet:
 
 ```{r}
 wl <- read.csv("http://wiener.math.csi.cuny.edu/verzani/tmp/weightlift.csv", skip=1)  # skip first row of file
@@ -618,8 +645,11 @@ head(wl, n=3)   # first 3 rows
 
 ## Data frames: factors
 
-Conversions to data frames usually transform character vectors into factors. In the weightloss data frame, this is the case. Here there is no advantage to using a factor, and even worse, it can be tedious. 
-There are ways to avoid the conversion. The `read.csv` function has this argument:
+Conversions to data frames usually transform character vectors into
+factors. In the weightloss data frame, this is the case. Here there is
+no advantage to using a factor, and even worse, it can be tedious.
+There are ways to avoid the conversion. The `read.csv` function has
+this argument:
 
 ```
 stringsAsFactors = default.stringsAsFactors()
@@ -669,7 +699,9 @@ library(rvest)
 lego_movie <- read_html("http://www.imdb.com/title/tt1490017/")
 ```
 
-The `lego_movie` structure isn't really a list, but rather a object to be queried through various functions. These require some underlying knowledge of the HTML page. 
+The `lego_movie` structure isn't really a list, but rather a object to
+be queried through various functions. These require some underlying
+knowledge of the HTML page.
 
 ----
 
