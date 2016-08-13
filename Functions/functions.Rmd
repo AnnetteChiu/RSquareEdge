@@ -1,5 +1,7 @@
 ---
 title: "Functions and program organization in R"
+subtitle: "For [RSQuareEdge](http://rsquareedge.com/) Where Data means Business"
+author: John Verzani `<jverzani@gmail.com>`
 output: ioslides_presentation
 ---
 
