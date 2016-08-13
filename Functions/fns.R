@@ -18,7 +18,7 @@ verify_name <- function(nm) {
 
 ## conveniences
 posix_to_timestamp <- function(d) {
-    sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d), month(d), day(d), hour(d), minute(d), second(d))
+    strftime(d, "%Y-%m-%dT%H:%M:%OS3")      
 }
 
 ## testit

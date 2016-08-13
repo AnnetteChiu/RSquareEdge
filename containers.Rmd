@@ -30,13 +30,14 @@ container, we can naturally introduce other containers.
 
 What is a vector?
 
-> A vector is a container holding n items all of the same type. The
-> items are ordered using 1-based indexing. Vectors may be constructed
-> by combining them with the `c` function.
+* A vector is a container holding $n$ items all of the same type. 
+
+* The items are ordered using $1$-based indexing. 
+* Vectors may be constructed by combining elements with the `c` function. (As we've done in the notes so far.)
 
 ----
 
-Vectors can be numeric, logical, character:
+Vectors have a type, or class. For example, this can be numeric, logical, character...:
 
 ```{r}
 c(1, 2, 3)
@@ -55,13 +56,13 @@ now() + weeks(c(1,2,3,4))
 
 ----
 
-Vectors must consist of elements all of the same type. If we try to
-construct one of a different type, the values will be coerced:
+Vectors, being homogeneous, must consist of elements all of the same type. If we try to
+construct one with a mix of types, the values will be coerced to a common type:
 
 ```{r}
 c(TRUE, 0, 1)          # TRUE -> 1 (FALSE -> 0)
 c("one", 2, 3.0)       # all coerced to character
-c(now(), 10)           # 10 becomes time 10 minutes after starting point
+c(now(), 10)           # 10 becomes time 10 seconds after starting point
 ```
 
 ## Length of vectors
@@ -86,12 +87,12 @@ Rather a type must be specified:
 numeric(0)
 ```
 
-More generally `numeric(10)` will produce a vector of length 10 with default values.
+More generally these constructors like `numeric(10)` will produce a vector of a prescribed length initialized with default values. 
 
 
 ## Vector attributes, Names
 
-Vectors can have attributes. A common one is to give the values names:
+Vectors can have attributes. A commonly used attribute, is to give the values names:
 
 ```{r}
 x <- c("one"= 1, "two" = 2, "three" = 3)
@@ -189,11 +190,11 @@ $$
 
 In words the sample mean is:
 
-> add the values and divide by their number
+> add the values in the datset and divide by their number
 
 And the sample standard deviation is:
 
-> center the variables, add their squares, divide by their number minus 1.
+> center the values in the dataset, add their squares, divide by their number minus 1.
 
 The phrasing works on the set of values at once, whereas the formulas spell out the thing to do to each value.
 
@@ -240,31 +241,41 @@ x - mean(x)
 
 ----
 
-Vectorization is pervasive throughout R. Conceptually this approach can offer benefits. It makes code more [declarative](https://en.wikipedia.org/wiki/Declarative_programming) and less *imperative*.
+Vectorization is pervasive throughout R. Conceptually this approach can offer benefits. It makes code more [declarative](https://en.wikipedia.org/wiki/Declarative_programming) and less *imperative*. However -- this style can be really confusing when learning R.
 
 
 
-There are also equally important technical reasons, as vectorized code often runs faster as more work can be done in the underlying C code.
+There are also equally important technical reasons, as vectorized code
+often runs faster as more work can be done in the underlying C code.
+
 
 ## generating vectors
 
-It is fairly common to need an arithmatic sequence of values:
+It is fairly common to need an arithmetic sequence of values:
 
 $$
 a, a + h, a + 2h, a + 3h, \dots, a + nh
 $$
 
-R makes this easy with two functions: the colon, which generates a squence when $h=1$ and `seq`:
+R makes this easy with two different functions: the colon, which generates a squence when $h=1$ and `seq` which allows the step, $h$, to be given.
 
 ```{r}
 1:10
 10:1
-seq(1, 10, by=2)
 ```
 
 ----
 
-With these, we can derive other sequences:
+```{r}
+seq(1, 10, by=2)
+seq(100, 0, by=-7)
+```
+
+
+
+----
+
+With these, we can derive other sequences through vectorized operations:
 
 
 ```{r}
@@ -315,7 +326,7 @@ No            20     20
 ----
 
 These numbers are naturally arranged in a two dimensional array of
-numbers -- matrix. In R the `matrix` function can do so:
+numbers -- a matrix. In R the `matrix` function can do this:
 
 ```{r}
 grades <- matrix(c(50,20, 10, 20), nrow=2)
@@ -345,13 +356,15 @@ dim(grades)
 
 ----
 
-The `[]` notation allows for more than one "index" to be specified. For a matrix, there are two. The row reference comes first, then the column. So to get the "10" out of `grades` we would have:
+The `[]` notation allows for more than one "index" to be
+specified. For a matrix, there are two. The row reference comes first,
+then the column. So to get the "10" out of `grades` (first row, second column) we would have:
 
 ```{r}
 grades[1, 2]
 ```
 
-We can leave an entry blank and get back all the values:
+We can leave an entry blank and get back all the values along that axis:
 
 ```{r}
 grades[1, ]
@@ -359,7 +372,7 @@ grades[1, ]
 
 ----
 
-These can be profitably combined, say, to compute the pass rate for students who did not do their HW:
+These styles can be profitably combined, say, to compute the fail rate for students who did  do their HW:
 
 ```{r}
 grades[1,2] / sum(grades[1, ])
@@ -392,6 +405,8 @@ dimnames(grades) <- list(
 grades
 ```
 
+----
+
 Are these  respected by subsetting?
 
 ```{r}
@@ -419,7 +434,7 @@ cases).
 
 As seen tables are a useful application of matrices beyond the
 mathematical sense. While we are here, we mention that there are two
-common table making functions: `table` and `xtabs`. The table command
+commonly used table-making functions: `table` and `xtabs`. The table command
 takes two vectors:
 
 ```{r}
@@ -441,11 +456,11 @@ A list is a generalized vector:
 
 ## Lists: construction
 
-List are constructed with the `list` operator:
+List are constructed with the `list` function:
 
 ```{r]
 list(1,2,3)
-list(a=1, b=2, c=3)
+list(a=1, b=2, c=3)   # with names
 ```
 
 The latter adds names at the time of construction. The `names` function can also add or modify names later.
@@ -479,7 +494,7 @@ l[["a"]]  # by name
 l$b       # short cut for l[["b"]].
 ```
 
-Moral: `[` to return a list, `[[` to get a component.
+Moral: `[` to return a list with restricted components, `[[` to get a component.
 
 ----
 
@@ -503,13 +518,18 @@ l
 
 ## Lists as return values
 
-Lists are workhorse in R. They play the role of tuples and dictionaries in other languages. They are often used as the return values of functions, especially the statistical modeling functions. One place we say them earlier was in `strsplit`. 
+Lists are a workhorse storage structure in R. They play the role of
+tuples and dictionaries in other languages. They are often used as the
+return values of functions, especially the statistical modeling
+functions. One place we saw them earlier was in a usage of `strsplit`.
 
 ```{r}
 qwerty <- "the quick brown fox jumped over the lazy dog"
 lincoln <- "four square and seven years ago"
 strsplit(c(qwerty, lincoln), " ")
 ```
+
+(each phrase is split as a component of the list)
 
 ----
 
@@ -520,7 +540,10 @@ str(m)
 
 ## Lists: Recursive
 
-Lists are known as recursive data structures, as their components can also be lists. An example is the output above. The model fit uses a linear algebra call, `qr` whose output is a list with some diagnostic values. Hence, this makes sense:
+Lists are known as recursive data structures, as their components can
+also be lists. An example is the output above. The model fit uses a
+linear algebra call, `qr` whose output is a list with some diagnostic
+values. Hence, this makes sense:
 
 ```{r}
 m$qr$pivot     # pivot columns of `qr` algorithm used
@@ -534,7 +557,7 @@ m$qr$pivot     # pivot columns of `qr` algorithm used
 Okay, a vector is a natural way to store a *univariate* data set.
 What about a *multivariate* data set? Our scenario:
 
-> For serveral different cases we record values for $n$ different variables:
+> For several different cases we record values for $n$ different variables:
 
 Case      Role     Gender   IQ
 ----      ----     ------   ----
@@ -543,7 +566,7 @@ Marge     Wife     female   110
 Bart      Son      male     120
 Lisa      Daughter female   160
 
-We have variables Role, Gender and IQ which are not homogeneous.
+We have variables `Role`, `Gender` and `IQ` which are not homogeneous.
 
 
 ----
@@ -555,11 +578,12 @@ role <- c("husband", "wife", "son", "daughter")
 gender <- c("male", "female", "male", "female")
 IQ <- c(100, 110, 120, 160)
 l <- list(role=role, gender=gender, IQ=IQ) # add names
+l
 ```
 
 ----
 
-But lists lose some of the information. In this case, the vectors in the list are all of the same length, as there is one measurement per case. Hence a table is appropriate. We could try to put them into a matrix:
+But lists mask some of the information. In this case, the vectors in the list are all of the same length, as there is one measurement per case. Hence a table is appropriate. We could try to put them into a matrix:
 
 ```{r}
 matrix(c(role, gender, IQ), nrow=4)
@@ -593,7 +617,7 @@ rownames(simpsons)
 
 ----
 
-We can set the row names with `rownames`:
+We can set the row names with the `rownames` function:
 
 ```{r}
 rownames(simpsons) <- c("Homer", "Marge", "Bart", "Lisa")
@@ -622,7 +646,7 @@ simpsons["IQ"]
 
 ----
 
-This is used quite often when indexing by logical vectors:
+Indexing by logical values is a common idiom:
 
 ```
 simpsons[simpsons$IQ >= 120, ]
@@ -655,8 +679,11 @@ this argument:
 stringsAsFactors = default.stringsAsFactors()
 ```
 
-The default is generally `TRUE`. It can be set to `FALSE` to suppress this.
+The default is generally `TRUE`. It can be set to `FALSE` to suppress this, as in
 
+```
+f <- "http://wiener.math.csi.cuny.edu/verzani/tmp/weightlift.csv"
+wl <- read.csv(f, skip=1, stringsAsFactors=FALSE)  
 ----
 
 After the fact, conversion can happen. For example by reassigning:
@@ -676,7 +703,7 @@ Suppose we take the weightloss data and want to create a derived variable: twoci
 var <- (2 * wl$snatch + wl$clean_jerk) / wl$w.class
 ```
 
-There is something tedious of having to reference the variable within the data frames, as it requires three times writing `wl$`. 
+There is something tedious about having to reference the variable within the data frames, as it requires three times writing `wl$`. 
 
 ----
 
@@ -689,6 +716,13 @@ This is a draw back to data frames. To work around this, there are several ways 
 ```{r}
 var <- with(wl, (2*snatch + clean_jerk) / w.class)
 ```             
+
+* some R functions take advantage of R's quirky evaluation semantics (`subset`, ...)
+
+
+## tibble
+
+For large data frames, a modern replacement is the `tibble` that is found in the `dplyr` package, to be described later. Tibbles have a few advantages -- no default coercion of strings to factors, better printing, more predictable subsetting (no dropping dimensions, no partial matching).
 
 ## Other data structures
 

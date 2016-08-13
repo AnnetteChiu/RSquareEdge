@@ -4,7 +4,6 @@ output: ioslides_presentation
 ---
 
 
-# Manipulating Data Containers
 
 ## Manipulating Data Containers
 
@@ -12,14 +11,13 @@ Storing data sets in data frames is very convenient, but with just the indexing 
 
 Consider the following question (from UsingR): For the `normtemp` dataset perform a `t.test` for temperature by gender.
 
-----
 
-First, we load the data:
 
 ```{r}
-require(UsingR)    # only for this dataset, don't bother installing
+normtemp <- UsingR::normtemp
 ```
 
+(No need to install `UsingR` -- it is used just for this example.)
 ----
 
 The data looks like:
@@ -30,19 +28,21 @@ head(normtemp)
 
 ----
 
-We see gender is coded. The docs (?normtemp) say 1 for male 2 for female. Here we split the data to perform a "t test":
+We see gender is coded. The docs say 1 for male 2 for female. Here we split the data to perform a "t test":
 
 ```{r}
-males <- normtemp[normtemp$gender == 1, "temperature"]
+males   <- normtemp[normtemp$gender == 1, "temperature"]
 females <- normtemp[normtemp$gender == 2, "temperature"]
 t.test(males, females)
 ```
 
 ----
 
-The pain comes from having to type so much for a task which should be simple: split the data and apply some function.
+Great, it appears there is a statististically significant difference in body temperature between male and females.
 
-For R's modeling functions, there is a syntax -- the  model formula -- that is usually designed for this:
+But why did this take take so much typing for something which seems simple: split the data and apply some function.
+
+For R's modeling functions, like `t.test`, there is a syntax -- the  model formula -- that is used to describe such tasks:
 
 ```{r}
 t.test(temperature ~ gender, data=normtemp)
@@ -50,10 +50,40 @@ t.test(temperature ~ gender, data=normtemp)
 
 ----
 
+The expression/model formula 
+
+`temperature ~ gender` 
+
+means roughly "model temperature
+by the gender variable and apply the `t.test` to it. The code in
+`t.test` then splits the data by the `gender` variable, checks that
+this leaves 2 levels, and if so calls the `t.test` function in the
+more verbose manner.
+
+
+----
+
+The combination of R's model formula and its use of polymorphism (different methods can be called for different types of data usin g the same name) can bring easy-to-type, yet very expressive commands. Plotting is a good example. Here we see two different types of plots, as the two formulas represent different types of models:
+
+----
+
+```{r}
+plot(hr ~ temperature, data=normtemp)
+```
+
+----
+
+```{r}
+plot(hr ~ factor(gender), data=normtemp)
+```
+
+
+----
+
 That's good for this function. But what about a lower level task:
-finding the mean or standard deviation of a group? There the model
-formula is not defined. It is helpful to develop some basic data
-massaging tools:
+finding the mean or standard deviation of a group? For these actions the model
+formula is not defined. As such, it is helpful to develop some basic data
+massaging tools related to data frames:
 
 * subsetting (filtering) values
 * reduction (selecting) variables to consider
@@ -68,10 +98,10 @@ For these tasks we illustrate a few solutions, both with base `R` and with add-o
 We will illustrate with two data sets, one modest, the other large
 
 ```{r}
-library(nycflights13)   ##  install.packages("nycflights13") is needed at some point
-library(MASS)           ## Built in package
-dim(flights)
-dim(Cars93)
+library(nycflights13)   # install.packages("nycflights13") is needed at some point
+library(MASS)           # Built in package
+dim(flights)            # large
+dim(Cars93)             # modest
 ```
 
 What do we have?
@@ -80,7 +110,7 @@ What do we have?
 
 In RStudio, a data frame can be shown in a (non-editable)
 table. Typically this involves just clicking on their entry in the
-"Environment" tab. But as these come from built-in data sets, an extra
+"Environment" tab. But as these data sets come from built-in data sets, an extra
 step is needed to make them show up. The following looks silly, but it
 actually makes a copy in the current workspace:
 
@@ -130,7 +160,11 @@ similar one from the `dplyr` package.
 
 ## Subsetting, Filtering data frames using `dplyr`
 
-The `dplyr` package provides some higher-level interfaces to indexing. For this task, filtering our cases, we have the `filter` function.
+The `dplyr` package provides some higher-level interfaces to
+indexing. For this task -- filtering our cases -- we have the `filter`
+function.
+
+First, we load the package:
 
 ```{r}
 library(dplyr)   # ignore the many comments...
@@ -144,7 +178,7 @@ Here is `dplyr`'s alternative:
 jb <- filter(flights, carrier == "B6")
 ```
 
-About the same, but we can make our queries much more involved:
+About the same as `subset`, but we can make our queries much more involved:
 
 ```{r}
 jb <- filter(flights, carrier == "B6", origin == "JFK")
@@ -162,9 +196,9 @@ jb <- filter(flights, carrier == "B6" | origin == "JFK")
 
 ----
 
-Some other examples. What flights went overnight?
+Some other examples. What flights went over midnight?
 
-Assuming the flights weren't 24 hours, these would be flights whose arrival time is less than the depature time:
+Assuming the flights weren't over 24 hours, these would be flights whose arrival time is less than the depature time:
 
 ```{r}
 red_eyes <- filter(flights, dep_time > arr_time)
@@ -203,9 +237,14 @@ nms <- names(Cars93)[c(1, 2, 11, 12, 13,14)]  # or type ...
 nms
 a <- Cars93[, nms]
 ```
+----
 
 If you want all *but* a variable, negative indexing is useful.
 
+```{r}
+a <- Cars93[, -26]  
+dim(a)
+```
 ----
 
 The `select` function of `dplyr` makes this slightly nicer if typing, as it uses non-standard evaluation of names:
@@ -215,7 +254,6 @@ a <- dplyr::select(Cars93, Manufacturer, Model,
             Cylinders, EngineSize, Horsepower,    RPM)
 ```
 
-----
 
 It can also "fill in", the above covers two sequences:
 
@@ -232,7 +270,8 @@ At the **enormous** risk of confusing things, the built-in `Filter` function can
 An example would be a means to remove variables which are not numeric:
 
 ```{r}
-x <-Filter(is.numeric, Cars93)   # Filter(predicate, data)
+a <- Filter(is.numeric, Cars93)   # Filter(predicate, data)
+dim(a)
 ```
 
 (Warning: lower case `filter` to filter rows, upper case to `Filter` columns, in a data frame.)
@@ -253,13 +292,17 @@ a <- filter(flights, carrier == "B6") %>% select(distance)
 
 Chaining (composing) versus monolithic calls.
 
-The last command could aslo have been done in one function call using base R's `subset` function:
+The last command could also have been done in one function call using base R's `subset` function:
 
 ```
 a <- subset(flights, carrier=="B6", select=distance)
 ```
 
 Which is more natural?
+
+----
+
+Natural,  of course, has a  personal answer, but the programming style of most *newer* R packages is to try and create single-task functions that are *orthogonal* to each other, so functions combining two tasks into one call (`subset` basically does both `filter` and `select`) is a less common thing to see.
 
 ## Applying a function over a container
 
@@ -378,7 +421,7 @@ In our previous example, we only have one command, so the braces were optional.
 
 ## anonymous functions
 
-If you want to reduce typing, we can even define function
+If you want to reduce typing, we can even define functions
 "anonymously":
 
 ```
@@ -403,9 +446,16 @@ by_origin <- split(Cars93, Cars93$Origin)
 ```
 
 The `by_origin` variable is a list with two components: one for `USA`
-and one `non-USA`. If we wanted we could apply a function to each.
+and one `non-USA` -- the different levels of `Origin`. 
+
+```{r}
+names(by_origin)
+```
 
 ----
+
+If we wanted we
+can apply a function to each component.
 
 For example, here is *one* way to get the number of cases in each:
 
@@ -413,17 +463,20 @@ For example, here is *one* way to get the number of cases in each:
 sapply(by_origin, nrow)
 ```
 
-(Maybe `table(Cars93$Origin)` is more direct.)
+You could argue  `table(Cars93$Origin)` is more direct for this taks, but using `sapply` is much more versatile.
 
 ----
 
 To get the average mileage for each requires a function which takes a
-data frame and returns the average. For that there is nothing built-in,
+data frame and returns the average of one of its variables. For that there is nothing built-in,
 so we roll our own:
 
 ```{r}
 sapply(by_origin, function(d) mean(d$MPG.highway))
 ```
+
+(It would be nicer to just say `summarize(by_origin, mean(MPG.highway)` but that is coming.)
+
 
 ---- 
 
@@ -442,8 +495,7 @@ out
 What do we know about the airlines that worked these planes so hard?
 
 ```{r}
-with(flights, flights[tailnum == names(out)[-1], "carrier"]) %>%
-  unique
+with(flights, flights[tailnum == names(out)[-1], "carrier"])
 ```
 
 They were all American. (Why a data frame print out?)
@@ -479,7 +531,24 @@ group_by(flights, carrier)   # no need to qualify `carrier`
 ```
 ----
 
-We can then chain things:
+We had this expression: `
+
+```
+by_origin <- split(Cars93, Cars93$Origin)
+sapply(by_origin, function(d) mean(d$MPG.highway))
+```
+
+Now, we can get there more easily with the `group_by` and `summarize` functions:
+
+```{r}
+by_origin <- group_by(Cars93, Origin)
+summarize(by_origin, mean(MPG.highway))
+```
+
+----
+
+
+As well, we can chain different tasks:
 
 ```{r}
 out = group_by(flights, carrier) %>%   # no need to qualify `carrier`
@@ -491,7 +560,7 @@ out
 
 ----
 
-Not sure this is more clear or less. We see the use of `summarize`, `arrange` and `head`. 
+Not sure this is more clear or less. We see, again, the use of `summarize`, but also `arrange` and `head`. 
 
 The `arrange` function plays the role of sort, but `arrange` is
 working on a data frame and `sort` on a vector.

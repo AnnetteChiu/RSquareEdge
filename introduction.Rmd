@@ -1,5 +1,6 @@
 ---
-title: "Introduction"
+title: "Introduction to R"
+author: John Verzani, `jverzani@gmail.com`
 output: ioslides_presentation
 ---
 
@@ -7,7 +8,7 @@ output: ioslides_presentation
 
 # What is R?
 
-John Verzani, `jverzani@gmail.com`
+
 
 From its [homepage](https://www.r-project.org/):
 
@@ -38,7 +39,11 @@ Many users think of R as a statistics system. We prefer to think of it of an env
 
 ## How big is R?
 
-Kaiser mentioned that I could cover material from a talk given in 2005. In reviewing that I saw that R had about 400 add-on packages. Today it is over 7000. It has between 1 and 2 million users. It is used by several companies, such as the New York Times (where R based graphics appear with some frequency).
+Kaiser mentioned that I could cover material from a talk given
+in 2005. In reviewing that I saw that R had about 400 add-on
+packages. Today it is nearing 10,000. It has between 1 and 2 million
+users. It is used by several companies, such as the New York Times
+(where R based graphics appear with some frequency).
 
 
 ## Our goals for these three sessions
@@ -48,8 +53,6 @@ We intend to cover topics on data, manipulations of data, and functions.
 Some (free and not free) resources for this material:
 
 * Through chapter 5 in [UsingR for Introductory Statistics](http://www.amazon.com/Introductory-Statistics-Second-Edition-Chapman/dp/1466590734)
-
-
 
 * The beginning of [My ASA notes](http://wiener.math.csi.cuny.edu/verzani/R/ASA-24-May-2005.pdf)
 
@@ -62,7 +65,7 @@ Some (free and not free) resources for this material:
 
 ## Getting started with R
 
-We need to get our R environment set up. Thankfully it is pretty easy:
+We need to get our R environment set up. Thankfully it is pretty easy -- just *two* downloads:
 
 * install R
 
@@ -94,7 +97,7 @@ The `##` bits are not printed out in the console, but rather are inserted by the
 
 ----
 
-Assignment: Computer languages use the equals sign differently than math expressions. In computer languages they are assignment:
+Assignment: Computer languages use the equals sign differently than math expressions do. In computer languages they are assignment:
 
 ```{r}
 x = 2
@@ -103,8 +106,10 @@ x = 2
 This assigns the label `x` to the value `2`. Here, the math interpretation is the same, but not here:
 
 ```{r}
-x = x + 2
+x = x^2 + 2
 ```
+
+(Math means solve for `x`'s which make both sides equal, in the computer the value of `x` is updated using the old value.)
 
 To clarify the distinction, R has a different syntax for assignment available:
 
@@ -123,7 +128,8 @@ Base R is a pretty rich programming environment in itself. However, it is design
 
 ----
 
-To illustrate, we can install the *external* `dplyr` package, which extends functionality related to data frames, with a command like:
+To illustrate, we can install the *external* `dplyr` package, which
+extends functionality related to data frames, with a command like:
 
 ```
 install.packages("dplyr")

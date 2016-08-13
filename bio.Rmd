@@ -1,3 +1,3 @@
 # Bio for John Verzani
 
-John Verzani is Professor and Chair of the Department of Mathematics at the College of Staten Island. He is an author on two books in the R series for CRC Press: *Using R for Introductory Statistics* and *Programming Graphical User Interfaces in R*. He is also just beginning with the editorial board of the *R-Journal*.
+John Verzani is Professor and Chair of the Department of Mathematics at the College of Staten Island. He is an author on two books in the R series for CRC Press: *Using R for Introductory Statistics* and *Programming Graphical User Interfaces in R*. He is also a member of the editorial board of the *R Journal*.

@@ -102,7 +102,7 @@
 <ul>
 <li>Rational numbers are needed to solve something like \(5x = 2\).</li>
 <li>real numbers are needed to solve something like \(x^2 = 2\)</li>
-<li>infinite numbers are needed to discuss arbitrarily large</li>
+<li>infinite numbers are needed to discuss the concept of arbitrarily large</li>
 <li>complex numbers are needed to solve something like \(x^2 + 2 =0\).</li>
 </ul>
 
@@ -145,7 +145,7 @@
 <pre >## [1] 5.551115e-17</pre>
 
 <ul>
-<li>The exponent can only be so big. But big enough to represent numbers as bit as \(10^{300}\) and as small as \(10^{-300}\), so pretty big and small.</li>
+<li>The exponent can only be so big. But big enough to represent numbers as big as \(10^{300}\) and as small as \(10^{-300}\), so pretty big and small.</li>
 </ul>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
@@ -170,7 +170,7 @@
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>R has a type for integers and way to create them, but they are not widely used outside of programming purposes:</p>
+<p>R has a type for integers and a way to create them, but they are not widely used outside of programming purposes:</p>
 
 <pre class = 'prettyprint lang-r'>class(1L)</pre>
 
@@ -218,7 +218,7 @@
 
 <p>The value <code>pi</code> is one of a few built-in constants. The number <code>e</code> is not one of them. For that, the function <code>exp(1)</code> can be used.</p>
 
-<p>Not mentioned, but part of floating point, are the value plus or minus infinity: <code>Inf</code> (an answer to <code>1/0</code>) and <code>NaN</code> for &quot;not a number&quot; which is a way to signal an error without stopping a program. (Generated, for example, by <code>0/0</code>.)</p>
+<p>Not mentioned, but part of floating point, are the value plus infinity: <code>Inf</code> (an answer to <code>1/0</code>) and <code>NaN</code> for &quot;not a number&quot; which is a way to signal an error without stopping a program. (Generated, for example, by <code>0/0</code>.)</p>
 
 </article></slide><slide class=''><hgroup><h2>Logical values</h2></hgroup><article  id="logical-values">
 
@@ -235,9 +235,11 @@ x &gt; 0</pre>
 
 <pre >## [1] TRUE</pre>
 
+<p>These operators are used for such &quot;questions&quot;: <code>&lt;</code>, <code>&lt;=</code>, <code>==</code>, <code>!=</code>, <code>&gt;=</code>, <code>&gt;</code>, <code>%in%</code>.</p>
+
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>The &quot;algebra&quot; of Boolean values is implemented by <code>&amp;</code> (and) and <code>|</code> (or):</p>
+<p>The &quot;algebra&quot; of Boolean values is implemented by <code>&amp;</code> (and), <code>|</code> (or), and <code>!</code> (not):</p>
 
 <pre class = 'prettyprint lang-r'>TRUE &amp; FALSE</pre>
 
@@ -251,16 +253,18 @@ x &gt; 0</pre>
 
 <pre >## [1] TRUE</pre>
 
+<p>(<code>&amp;&amp;</code> and <code>||</code> are short-circuting and not vectorized.)</p>
+
 </article></slide><slide class=''><hgroup><h2>Dates and times</h2></hgroup><article  id="dates-and-times">
 
-<p>R has built-in classes for storing dates and times. As well, their are other external packages, such as <code>lubridate</code>, to facilitate this.</p>
+<p>R has built-in classes for storing dates and times. As well, there are other external packages, such as <code>lubridate</code>, to facilitate this.</p>
 
 <p>The <code>POSIXct</code> class represents the (signed) number of seconds since the beginning of 1970 (in the UTC time zone) as a number vector (<code>?POSIXct</code>):</p>
 
 <pre class = 'prettyprint lang-r'>now &lt;- Sys.time()
 now</pre>
 
-<pre >## [1] &quot;2016-08-06 21:21:28 EDT&quot;</pre>
+<pre >## [1] &quot;2016-08-13 12:06:04 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -268,20 +272,20 @@ now</pre>
 
 <pre class = 'prettyprint lang-r'>now - 60*60 # an hour ago</pre>
 
-<pre >## [1] &quot;2016-08-06 20:21:28 EDT&quot;</pre>
+<pre >## [1] &quot;2016-08-13 11:06:04 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>The <code>POSIXlt</code> class stores values in list. It may print the same way, but it allows some underlying access:</p>
+<p>The <code>POSIXlt</code> class stores values in a list. Such objects may print the same way at <code>POSIXct</code> ones, but this format allows some underlying access:</p>
 
 <pre class = 'prettyprint lang-r'>a &lt;- as.POSIXlt(now)
 a</pre>
 
-<pre >## [1] &quot;2016-08-06 21:21:28 EDT&quot;</pre>
+<pre >## [1] &quot;2016-08-13 12:06:04 EDT&quot;</pre>
 
 <pre class = 'prettyprint lang-r'>a$mday  # day of month</pre>
 
-<pre >## [1] 6</pre>
+<pre >## [1] 13</pre>
 
 <p>Time is pretty complicated when timezones, leap seconds, leap years, &#8230; are included. The manual page is informative</p>
 
@@ -289,7 +293,7 @@ a</pre>
 
 <p>The <a href='https://github.com/hadley/lubridate' title=''>lubridate</a> package can make working with time data fairly intuitive. Assuming it is installed, we load it with:</p>
 
-<pre class = 'prettyprint lang-r'>require(lubridate)</pre>
+<pre class = 'prettyprint lang-r'>require(&quot;lubridate&quot;)</pre>
 
 <pre >## Loading required package: lubridate</pre>
 
@@ -300,11 +304,13 @@ a</pre>
 ## 
 ##     date</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
 <p>With this we can create time/date values easily enough:</p>
 
 <pre class = 'prettyprint lang-r'>now()</pre>
 
-<pre >## [1] &quot;2016-08-06 21:21:29 EDT&quot;</pre>
+<pre >## [1] &quot;2016-08-13 12:06:04 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -336,13 +342,15 @@ today_start</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>We can manipulate times with natural idioms:</p>
+<p>We can then manipulate times with natural idioms:</p>
 
 <pre class = 'prettyprint lang-r'>today_start + weeks(1)  # next week&#39;s start </pre>
 
 <pre >## [1] &quot;2016-02-26 13:00:00 EST&quot;</pre>
 
-<p>There is more to say, but not here&#8230;.</p>
+<p>The functions <code>days</code>, <code>weeks</code>, <code>months</code> and <code>years</code> create <code>period</code> objects which can be used to add. The functions <code>day</code>, <code>week</code>, <code>month</code>, <code>year</code> extract these values from an object.</p>
+
+<p>There is more to say, but we won&#39;t do so here.</p>
 
 </article></slide><slide class=''><hgroup><h2>Character values</h2></hgroup><article  id="character-values">
 
@@ -374,6 +382,8 @@ today_start</pre>
 <pre class = 'prettyprint lang-r'>qwerty &lt;- &quot;the quick brown fox jumps over the lazy dog&quot;
 lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
+<p>(I&#39;d suggest using double quotes.)</p>
+
 <p>Character data can be encoded to accommodate other languages. This topic can be involved, but is necessary for many uses. Here we assume ASCII encoding are used.</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
@@ -384,7 +394,7 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 <pre >## [1] &quot;THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG&quot;</pre>
 
-<pre class = 'prettyprint lang-r'>chartr(&quot;q&quot;, &quot;Q&quot;, qwerty) # more fine-grained translation (never used before!)</pre>
+<pre class = 'prettyprint lang-r'>chartr(&quot;q&quot;, &quot;Q&quot;, qwerty) # more fine-grained translation (I&#39;ve never used before!)</pre>
 
 <pre >## [1] &quot;the Quick brown fox jumps over the lazy dog&quot;</pre>
 
@@ -396,12 +406,10 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 <p>Strings can be split up with <code>strsplit</code>:</p>
 
-<pre class = 'prettyprint lang-r'>strsplit(qwerty, &quot;&quot;)</pre>
+<pre class = 'prettyprint lang-r'>strsplit(qwerty, &quot; &quot;) # by space</pre>
 
 <pre >## [[1]]
-##  [1] &quot;t&quot; &quot;h&quot; &quot;e&quot; &quot; &quot; &quot;q&quot; &quot;u&quot; &quot;i&quot; &quot;c&quot; &quot;k&quot; &quot; &quot; &quot;b&quot; &quot;r&quot; &quot;o&quot; &quot;w&quot; &quot;n&quot; &quot; &quot; &quot;f&quot;
-## [18] &quot;o&quot; &quot;x&quot; &quot; &quot; &quot;j&quot; &quot;u&quot; &quot;m&quot; &quot;p&quot; &quot;s&quot; &quot; &quot; &quot;o&quot; &quot;v&quot; &quot;e&quot; &quot;r&quot; &quot; &quot; &quot;t&quot; &quot;h&quot; &quot;e&quot;
-## [35] &quot; &quot; &quot;l&quot; &quot;a&quot; &quot;z&quot; &quot;y&quot; &quot; &quot; &quot;d&quot; &quot;o&quot; &quot;g&quot;</pre>
+## [1] &quot;the&quot;   &quot;quick&quot; &quot;brown&quot; &quot;fox&quot;   &quot;jumps&quot; &quot;over&quot;  &quot;the&quot;   &quot;lazy&quot;  &quot;dog&quot;</pre>
 
 <p>(The output is a bit confusing for now.)</p>
 
@@ -417,7 +425,22 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
+<p>Formatted strings can also be generated with the <code>sprintf</code> function. The basic use is a template is given and values are filled in. For example:</p>
+
+<pre class = 'prettyprint lang-r'>adjective &lt;- &quot;quick&quot;; verb &lt;- &quot;jumped&quot;
+sprintf(&quot;The %s brown fox %s over the lazy dog&quot;, adjective, verb)</pre>
+
+<pre >## [1] &quot;The quick brown fox jumped over the lazy dog&quot;</pre>
+
+<p>The <code>%s</code> is a placeholder for string. There are also many placeholders for formatting numbers various ways. We will see <code>%f</code> and variants for floating point number manipulations.</p>
+
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
 <p>R has pattern matching through regular expressions available. A useful function is <code>grepl</code> that indicates if a match occurs:</p>
+
+<pre class = 'prettyprint lang-r'>grepl(&quot;quick&quot;, qwerty)</pre>
+
+<pre >## [1] TRUE</pre>
 
 <pre class = 'prettyprint lang-r'>grepl(&quot;QUICK&quot;, qwerty)  # case sensitive</pre>
 
@@ -434,9 +457,9 @@ lincoln &lt;- &quot;four score and seven years ago...&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Factors</h2></hgroup><article  id="factors">
 
-<p>For categorical data, there are a <em>fixed</em> number of levels from which a value comes from. There are computational advantages here, as storage can be made more efficient. There are other statistical advantages too.</p>
+<p>For categorical data, there are a <em>fixed</em> number of levels from which a value comes from. R can use a special type for storage then (use a code for the value, and a lookup table for the names). There are computational advantages, as storage can be made more efficient. As well, there are statistical advantages.</p>
 
-<p>Putting that asside, such values are called &quot;factors&quot; and are created by the <code>factor</code> function. Let&#39;s make the Likert scale. (The levels are generated with a vector which will be explained in a bit):</p>
+<p>Putting that aside, such values are called &quot;factors&quot; and are created by the <code>factor</code> function. Let&#39;s make the Likert scale. (The levels are generated with a vector which will be explained in a bit):</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -471,7 +494,9 @@ x</pre>
 
 <p>Oops, I spelled &quot;strongly&quot; as <code>strongl</code>. How to change that?</p>
 
-<p>We could correct the values of <code>likert</code> and then re-create <code>x</code>. But we may not want to do that. We can also redefine the levels of a factor. Here is one way:</p>
+<p>We could correct the values of <code>likert</code> and then re-create <code>x</code>. Redoing work can be annoying, there must be a direct way.</p>
+
+<p>We need to redefine the levels of a factor. Here is one way:</p>
 
 <pre class = 'prettyprint lang-r'>likert &lt;- c(&quot;strongly agree&quot;, &quot;agree&quot;, &quot;no opinion&quot;, 
             &quot;disagree&quot;, &quot;strongly disagree&quot;)
@@ -515,7 +540,7 @@ x</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>An interesting think about <code>NA</code> values is that they poison subsequent operations:</p>
+<p>An interesting thing about <code>NA</code> values is that they poison subsequent operations:</p>
 
 <pre class = 'prettyprint lang-r'>5 + NA</pre>
 
@@ -533,13 +558,13 @@ x</pre>
 
 <p>Hmmm, why might that not work?</p>
 
-<p>The <code>is.na</code> function is here for this:</p>
+<p>The <code>is.na</code> function is here for this task:</p>
 
 <pre class = 'prettyprint lang-r'>is.na(NA)</pre>
 
 <pre >## [1] TRUE</pre>
 
-<p>(This is different, but somehow related to, the floating point value <code>NaN</code>.)</p>
+<p>(This is different, but somehow similar to, the floating point value <code>NaN</code>.)</p>
 
 </article></slide><slide class=''><hgroup><h2>Coercion between types</h2></hgroup><article  id="coercion-between-types">
 
@@ -549,7 +574,7 @@ x</pre>
 
 <pre class = 'prettyprint lang-r'>as.POSIXlt(Sys.time())</pre>
 
-<pre >## [1] &quot;2016-08-06 21:21:29 EDT&quot;</pre>
+<pre >## [1] &quot;2016-08-13 12:06:04 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -612,7 +637,9 @@ x</pre>
 
 <pre class = 'prettyprint lang-r'>as(1.0, &quot;character&quot;)</pre>
 
-<pre >## [1] &quot;1&quot;</pre></article></slide>
+<pre >## [1] &quot;1&quot;</pre>
+
+<p>One place we will see coercion being useful is in a data-cleaning task.</p></article></slide>
 
 
   <slide class="backdrop"></slide>

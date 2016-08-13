@@ -16,7 +16,8 @@ verify_name <- function(nm) {
 ##' convert posix time into timestamp format
 ##' @param d a posix time
 posix_to_timestamp <- function(d) {
-    sprintf("%4d-%02d-%02dT%02d:%02d:%3.3f", year(d), month(d), day(d), hour(d), minute(d), second(d))
+    stopifnot(is.POSIXct(d))
+    strftime(d, "%Y-%m-%dT%H:%M:%OS3")
 }
 
 

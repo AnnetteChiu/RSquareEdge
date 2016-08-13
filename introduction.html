@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Introduction</title>
+  <title>Introduction to R</title>
 
   <meta charset="utf-8">
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -25,7 +25,7 @@
     var SLIDE_CONFIG = {
       // Slide settings
       settings: {
-                title: 'Introduction',
+                title: 'Introduction to R',
                         useBuilds: true,
         usePrettify: true,
         enableSlideAreas: true,
@@ -34,6 +34,14 @@
 
       // Author information
       presenters: [
+            {
+        name:  'John Verzani, <code>jverzani@gmail.com</code>' ,
+        company: '',
+        gplus: '',
+        twitter: '',
+        www: '',
+        github: ''
+      },
             ]
     };
   </script>
@@ -85,8 +93,6 @@
 
 <slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>What is R?</h2></hgroup><article  id="what-is-r">
 
-<p>John Verzani, <code>jverzani@gmail.com</code></p>
-
 <p>From its <a href='https://www.r-project.org/' title=''>homepage</a>:</p>
 
 <blockquote>
@@ -116,7 +122,7 @@
 
 </article></slide><slide class=''><hgroup><h2>How big is R?</h2></hgroup><article  id="how-big-is-r">
 
-<p>Kaiser mentioned that I could cover material from a talk given in 2005. In reviewing that I saw that R had about 400 add-on packages. Today it is over 7000. It has between 1 and 2 million users. It is used by several companies, such as the New York Times (where R based graphics appear with some frequency).</p>
+<p>Kaiser mentioned that I could cover material from a talk given in 2005. In reviewing that I saw that R had about 400 add-on packages. Today it is nearing 10,000. It has between 1 and 2 million users. It is used by several companies, such as the New York Times (where R based graphics appear with some frequency).</p>
 
 </article></slide><slide class=''><hgroup><h2>Our goals for these three sessions</h2></hgroup><article  id="our-goals-for-these-three-sessions">
 
@@ -134,7 +140,7 @@
 
 </article></slide><slide class=''><hgroup><h2>Getting started with R</h2></hgroup><article  id="getting-started-with-r">
 
-<p>We need to get our R environment set up. Thankfully it is pretty easy:</p>
+<p>We need to get our R environment set up. Thankfully it is pretty easy &#8211; just <em>two</em> downloads:</p>
 
 <ul>
 <li>install R</li>
@@ -170,13 +176,15 @@
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>Assignment: Computer languages use the equals sign differently than math expressions. In computer languages they are assignment:</p>
+<p>Assignment: Computer languages use the equals sign differently than math expressions do. In computer languages they are assignment:</p>
 
 <pre class = 'prettyprint lang-r'>x = 2</pre>
 
 <p>This assigns the label <code>x</code> to the value <code>2</code>. Here, the math interpretation is the same, but not here:</p>
 
-<pre class = 'prettyprint lang-r'>x = x + 2</pre>
+<pre class = 'prettyprint lang-r'>x = x^2 + 2</pre>
+
+<p>(Math means solve for <code>x</code>&#39;s which make both sides equal, in the computer the value of <code>x</code> is updated using the old value.)</p>
 
 <p>To clarify the distinction, R has a different syntax for assignment available:</p>
 

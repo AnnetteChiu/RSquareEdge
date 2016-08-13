@@ -19,7 +19,7 @@ In math, we can recongnize the needs of such numbers as they come into play when
 
 * Rational numbers are needed to solve something like $5x = 2$.
 * real numbers are needed to solve something like $x^2 = 2$
-* infinite numbers are needed to discuss arbitrarily large 
+* infinite numbers are needed to discuss the concept of arbitrarily large 
 * complex numbers are needed to solve something like $x^2 + 2 =0$.
 
 ## Numbers in R
@@ -57,7 +57,7 @@ These gaps can appear in simple statements:
 (.1 + .2) - .3
 ```
 
-* The exponent can only be so big. But big enough to represent numbers as bit as $10^{300}$ and as small as $10^{-300}$, so pretty big and small.
+* The exponent can only be so big. But big enough to represent numbers as big as $10^{300}$ and as small as $10^{-300}$, so pretty big and small.
 
 ----
 
@@ -82,7 +82,7 @@ typeof(1)
 
 ----
 
-R has a type for integers and way to create them, but they are not widely used outside of programming purposes:
+R has a type for integers and a way to create them, but they are not widely used outside of programming purposes:
 
 ```{r}
 class(1L)
@@ -132,7 +132,7 @@ sin(pi/2)
 
 The value `pi` is one of a few built-in constants. The number `e` is not one of them. For that, the function `exp(1)` can be used.
 
-Not mentioned, but part of floating point, are the value plus or minus infinity: `Inf` (an answer to `1/0`) and `NaN` for "not a number" which is a way to signal an error without stopping a program. (Generated, for example, by `0/0`.)
+Not mentioned, but part of floating point, are the value plus  infinity: `Inf` (an answer to `1/0`) and `NaN` for "not a number" which is a way to signal an error without stopping a program. (Generated, for example, by `0/0`.)
 
 ## Logical values
 
@@ -149,9 +149,12 @@ x  = 1
 x > 0
 ```
 
+These operators are used for such "questions": `<`, `<=`, `==`, `!=`, `>=`, `>`, `%in%`.
+
+
 ----
 
-The "algebra" of Boolean values is implemented by `&` (and) and `|` (or):
+The "algebra" of Boolean values is implemented by `&` (and), `|` (or), and `!` (not):
 
 ```{r}
 TRUE & FALSE
@@ -159,11 +162,12 @@ TRUE | FALSE
 !FALSE
 ```
 
+(`&&` and `||` are short-circuting and not vectorized.)
 
 ## Dates and times
 
-R has built-in classes for storing dates and times. As well, their are other external packages, such as `lubridate`, to facilitate this.
-
+R has built-in classes for storing dates and times. As well, there are other external packages, such as `lubridate`, to facilitate this.
+ 
 The `POSIXct` class represents the (signed) number of seconds since the beginning of 1970 (in the UTC time zone) as a number vector (`?POSIXct`):
 
 ```{r}
@@ -181,7 +185,7 @@ now - 60*60 # an hour ago
 
 ----
 
-The `POSIXlt` class stores values in list. It may print the same way, but it allows some underlying access:
+The `POSIXlt` class stores values in a list. Such objects may print the same way at `POSIXct` ones, but this format allows some underlying access:
 
 ```{r}
 a <- as.POSIXlt(now)
@@ -197,11 +201,15 @@ Time is pretty complicated when timezones, leap seconds, leap years, ... are inc
 
 ## Lubridate
 
-The [lubridate](https://github.com/hadley/lubridate) package can make working with time data fairly intuitive. Assuming it is installed, we load it with:
+The [lubridate](https://github.com/hadley/lubridate) package can make
+working with time data fairly intuitive. Assuming it is installed, we
+load it with:
 
 ```{r}
-require(lubridate)
+require("lubridate")
 ```
+
+---- 
 
 With this we can create time/date values easily enough:
 
@@ -230,13 +238,15 @@ ymd("2017-02-29")
 
 ----
 
-We can manipulate times with natural idioms:
+We can then manipulate times with natural idioms:
 
 ```{r}
 today_start + weeks(1)  # next week's start 
 ```
 
-There is more to say, but not here....
+The functions `days`, `weeks`, `months` and `years` create `period` objects which can be used to add. The functions `day`, `week`, `month`, `year` extract these values from an object.
+
+There is more to say, but we won't do so here.
 
 ## Character values
 
@@ -266,6 +276,8 @@ qwerty <- "the quick brown fox jumps over the lazy dog"
 lincoln <- "four score and seven years ago..."
 ````
 
+(I'd suggest using double quotes.)
+
 Character data can be encoded to accommodate other languages. This topic can be involved, but is necessary for many uses. Here we assume ASCII encoding are used.
 
 ----
@@ -274,7 +286,7 @@ There are a number of functions that manipulate character data:
 
 ```{r}
 toupper(qwerty)  # also tolower
-chartr("q", "Q", qwerty) # more fine-grained translation (never used before!)
+chartr("q", "Q", qwerty) # more fine-grained translation (I've never used before!)
 substr(qwerty, 5,9)  # take substrings
 ```
 
@@ -283,7 +295,7 @@ substr(qwerty, 5,9)  # take substrings
 Strings can be split up with `strsplit`:
 
 ```{r}
-strsplit(qwerty, "")
+strsplit(qwerty, " ") # by space
 ```
 
 (The output is a bit confusing for now.)
@@ -300,9 +312,21 @@ paste("the", "quick", "brown", "fox", sep="<-->")
 
 ----
 
+Formatted strings can also be generated with the `sprintf` function. The basic use is a template is given and values are filled in. For example:
+
+```{r}
+adjective <- "quick"; verb <- "jumped"
+sprintf("The %s brown fox %s over the lazy dog", adjective, verb)
+```
+
+The `%s` is a placeholder for string. There are also many placeholders for formatting numbers various ways. We will see `%f` and variants for floating point number manipulations. 
+
+----
+
 R has pattern matching through regular expressions available. A useful function is `grepl` that indicates if a match occurs:
 
 ```{r}
+grepl("quick", qwerty)
 grepl("QUICK", qwerty)  # case sensitive
 sapply(letters, function(x) grepl(x, qwerty))  # all there...
 ```
@@ -312,9 +336,9 @@ sapply(letters, function(x) grepl(x, qwerty))  # all there...
 
 ## Factors
 
-For categorical data, there are a *fixed*  number of levels from which a value comes from. There are computational advantages here, as storage can be made more efficient. There are other statistical advantages too.
+For categorical data, there are a *fixed*  number of levels from which a value comes from. R can use a special type for storage then (use a code for the value, and a lookup table for the names). There are computational advantages, as storage can be made more efficient. As well, there are  statistical advantages.
 
-Putting that asside, such values are called "factors" and are created by the `factor` function. Let's make the Likert scale. (The levels are generated with a vector which will be explained in a bit):
+Putting that aside, such values are called "factors" and are created by the `factor` function. Let's make the Likert scale. (The levels are generated with a vector which will be explained in a bit):
 
 ----
 
@@ -347,7 +371,9 @@ So spelling matters.
 
 Oops, I spelled "strongly" as `strongl`. How to change that?
 
-We could correct the values of `likert` and then re-create `x`. But we may not want to do that. We can also redefine the levels of a factor. Here is one way:
+We could correct the values of `likert` and then re-create `x`. Redoing work can be annoying, there must be a direct way.
+
+We need to redefine the levels of a factor. Here is one way:
 
 ```{r}
 likert <- c("strongly agree", "agree", "no opinion", 
@@ -389,7 +415,7 @@ NA
 
 ----
 
-An interesting think about `NA` values is that they poison subsequent operations:
+An interesting thing about `NA` values is that they poison subsequent operations:
 
 ```{r}
 5 + NA
@@ -407,13 +433,13 @@ NA == NA
 
 Hmmm, why might that not work?
 
-The `is.na` function is here for this:
+The `is.na` function is here for this task:
 
 ```{r}
 is.na(NA)
 ```
 
-(This is different, but somehow related to, the floating point value `NaN`.)
+(This is different, but somehow similar to, the floating point value `NaN`.)
 
 ## Coercion between types
 
@@ -479,3 +505,4 @@ More generally, to coerce an object of one class into another, we have the `as(o
 as(1.0, "character")
 ```
 
+One place we will see coercion being useful is in a data-cleaning task.

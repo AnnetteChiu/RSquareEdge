@@ -122,13 +122,15 @@
 
 <p>What is a vector?</p>
 
-<blockquote>
-<p>A vector is a container holding n items all of the same type. The items are ordered using 1-based indexing. Vectors may be constructed by combining them with the <code>c</code> function.</p>
-</blockquote>
+<ul>
+<li><p>A vector is a container holding \(n\) items all of the same type.</p></li>
+<li>The items are ordered using \(1\)-based indexing.</li>
+<li><p>Vectors may be constructed by combining elements with the <code>c</code> function. (As we&#39;ve done in the notes so far.)</p></li>
+</ul>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>Vectors can be numeric, logical, character:</p>
+<p>Vectors have a type, or class. For example, this can be numeric, logical, character&#8230;:</p>
 
 <pre class = 'prettyprint lang-r'>c(1, 2, 3)</pre>
 
@@ -159,12 +161,12 @@
 
 <pre class = 'prettyprint lang-r'>now() + weeks(c(1,2,3,4))</pre>
 
-<pre >## [1] &quot;2016-08-13 21:20:13 EDT&quot; &quot;2016-08-20 21:20:13 EDT&quot;
-## [3] &quot;2016-08-27 21:20:13 EDT&quot; &quot;2016-09-03 21:20:13 EDT&quot;</pre>
+<pre >## [1] &quot;2016-08-20 12:26:59 EDT&quot; &quot;2016-08-27 12:26:59 EDT&quot;
+## [3] &quot;2016-09-03 12:26:59 EDT&quot; &quot;2016-09-10 12:26:59 EDT&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>Vectors must consist of elements all of the same type. If we try to construct one of a different type, the values will be coerced:</p>
+<p>Vectors, being homogeneous, must consist of elements all of the same type. If we try to construct one with a mix of types, the values will be coerced to a common type:</p>
 
 <pre class = 'prettyprint lang-r'>c(TRUE, 0, 1)          # TRUE -&gt; 1 (FALSE -&gt; 0)</pre>
 
@@ -174,9 +176,9 @@
 
 <pre >## [1] &quot;one&quot; &quot;2&quot;   &quot;3&quot;</pre>
 
-<pre class = 'prettyprint lang-r'>c(now(), 10)           # 10 becomes time 10 minutes after starting point</pre>
+<pre class = 'prettyprint lang-r'>c(now(), 10)           # 10 becomes time 10 seconds after starting point</pre>
 
-<pre >## [1] &quot;2016-08-06 21:20:13 EDT&quot; &quot;1969-12-31 19:00:10 EST&quot;</pre>
+<pre >## [1] &quot;2016-08-13 12:26:59 EDT&quot; &quot;1969-12-31 19:00:10 EST&quot;</pre>
 
 </article></slide><slide class=''><hgroup><h2>Length of vectors</h2></hgroup><article  id="length-of-vectors">
 
@@ -201,11 +203,11 @@ length(x)</pre>
 
 <pre >## numeric(0)</pre>
 
-<p>More generally <code>numeric(10)</code> will produce a vector of length 10 with default values.</p>
+<p>More generally these constructors like <code>numeric(10)</code> will produce a vector of a prescribed length initialized with default values.</p>
 
 </article></slide><slide class=''><hgroup><h2>Vector attributes, Names</h2></hgroup><article  id="vector-attributes-names">
 
-<p>Vectors can have attributes. A common one is to give the values names:</p>
+<p>Vectors can have attributes. A commonly used attribute, is to give the values names:</p>
 
 <pre class = 'prettyprint lang-r'>x &lt;- c(&quot;one&quot;= 1, &quot;two&quot; = 2, &quot;three&quot; = 3)
 x</pre>
@@ -314,13 +316,13 @@ s^2 = \frac{(x_1 - \bar{x})^2 + (x_2 - \bar{x})^2 + \cdots + (x_n - \bar{x})^2}{
 <p>In words the sample mean is:</p>
 
 <blockquote>
-<p>add the values and divide by their number</p>
+<p>add the values in the datset and divide by their number</p>
 </blockquote>
 
 <p>And the sample standard deviation is:</p>
 
 <blockquote>
-<p>center the variables, add their squares, divide by their number minus 1.</p>
+<p>center the values in the dataset, add their squares, divide by their number minus 1.</p>
 </blockquote>
 
 <p>The phrasing works on the set of values at once, whereas the formulas spell out the thing to do to each value.</p>
@@ -383,19 +385,19 @@ sum(x)     # x1 + x2 + ... + xn</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>Vectorization is pervasive throughout R. Conceptually this approach can offer benefits. It makes code more <a href='https://en.wikipedia.org/wiki/Declarative_programming' title=''>declarative</a> and less <em>imperative</em>.</p>
+<p>Vectorization is pervasive throughout R. Conceptually this approach can offer benefits. It makes code more <a href='https://en.wikipedia.org/wiki/Declarative_programming' title=''>declarative</a> and less <em>imperative</em>. However &#8211; this style can be really confusing when learning R.</p>
 
 <p>There are also equally important technical reasons, as vectorized code often runs faster as more work can be done in the underlying C code.</p>
 
 </article></slide><slide class=''><hgroup><h2>generating vectors</h2></hgroup><article  id="generating-vectors">
 
-<p>It is fairly common to need an arithmatic sequence of values:</p>
+<p>It is fairly common to need an arithmetic sequence of values:</p>
 
 <p>\[
 a, a + h, a + 2h, a + 3h, \dots, a + nh
 \]</p>
 
-<p>R makes this easy with two functions: the colon, which generates a squence when \(h=1\) and <code>seq</code>:</p>
+<p>R makes this easy with two different functions: the colon, which generates a squence when \(h=1\) and <code>seq</code> which allows the step, \(h\), to be given.</p>
 
 <pre class = 'prettyprint lang-r'>1:10</pre>
 
@@ -405,13 +407,19 @@ a, a + h, a + 2h, a + 3h, \dots, a + nh
 
 <pre >##  [1] 10  9  8  7  6  5  4  3  2  1</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
 <pre class = 'prettyprint lang-r'>seq(1, 10, by=2)</pre>
 
 <pre >## [1] 1 3 5 7 9</pre>
 
+<pre class = 'prettyprint lang-r'>seq(100, 0, by=-7)</pre>
+
+<pre >##  [1] 100  93  86  79  72  65  58  51  44  37  30  23  16   9   2</pre>
+
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>With these, we can derive other sequences:</p>
+<p>With these, we can derive other sequences through vectorized operations:</p>
 
 <pre class = 'prettyprint lang-r'>2^(1:5)  # powers of 2</pre>
 
@@ -471,7 +479,7 @@ fib</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>These numbers are naturally arranged in a two dimensional array of numbers &#8211; matrix. In R the <code>matrix</code> function can do so:</p>
+<p>These numbers are naturally arranged in a two dimensional array of numbers &#8211; a matrix. In R the <code>matrix</code> function can do this:</p>
 
 <pre class = 'prettyprint lang-r'>grades &lt;- matrix(c(50,20, 10, 20), nrow=2)
 grades</pre>
@@ -506,13 +514,13 @@ grades</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>The <code>[]</code> notation allows for more than one &quot;index&quot; to be specified. For a matrix, there are two. The row reference comes first, then the column. So to get the &quot;10&quot; out of <code>grades</code> we would have:</p>
+<p>The <code>[]</code> notation allows for more than one &quot;index&quot; to be specified. For a matrix, there are two. The row reference comes first, then the column. So to get the &quot;10&quot; out of <code>grades</code> (first row, second column) we would have:</p>
 
 <pre class = 'prettyprint lang-r'>grades[1, 2]</pre>
 
 <pre >## [1] 10</pre>
 
-<p>We can leave an entry blank and get back all the values:</p>
+<p>We can leave an entry blank and get back all the values along that axis:</p>
 
 <pre class = 'prettyprint lang-r'>grades[1, ]</pre>
 
@@ -520,7 +528,7 @@ grades</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>These can be profitably combined, say, to compute the pass rate for students who did not do their HW:</p>
+<p>These styles can be profitably combined, say, to compute the fail rate for students who did do their HW:</p>
 
 <pre class = 'prettyprint lang-r'>grades[1,2] / sum(grades[1, ])</pre>
 
@@ -558,6 +566,8 @@ grades</pre>
 ##   Did HW            50     10
 ##   Did not do HW     20     20</pre>
 
+</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+
 <p>Are these respected by subsetting?</p>
 
 <pre class = 'prettyprint lang-r'>grades[1,2]</pre>
@@ -583,7 +593,7 @@ grades</pre>
 
 </article></slide><slide class=''><hgroup><h2>Tables</h2></hgroup><article  id="tables">
 
-<p>As seen tables are a useful application of matrices beyond the mathematical sense. While we are here, we mention that there are two common table making functions: <code>table</code> and <code>xtabs</code>. The table command takes two vectors:</p>
+<p>As seen tables are a useful application of matrices beyond the mathematical sense. While we are here, we mention that there are two commonly used table-making functions: <code>table</code> and <code>xtabs</code>. The table command takes two vectors:</p>
 
 <pre class = 'prettyprint lang-r'>gender &lt;- c(&quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;female&quot;, &quot;female&quot;)
 background &lt;- c(&quot;humanities&quot;, &quot;humanities&quot;, &quot;STEM&quot;, &quot;STEM&quot;,&quot;humanities&quot;)
@@ -608,10 +618,10 @@ table(gender, background)</pre>
 
 </article></slide><slide class=''><hgroup><h2>Lists: construction</h2></hgroup><article  id="lists-construction">
 
-<p>List are constructed with the <code>list</code> operator:</p>
+<p>List are constructed with the <code>list</code> function:</p>
 
 <pre class = 'prettyprint lang-{r]'>list(1,2,3)
-list(a=1, b=2, c=3)</pre>
+list(a=1, b=2, c=3)   # with names</pre>
 
 <p>The latter adds names at the time of construction. The <code>names</code> function can also add or modify names later.</p>
 
@@ -655,7 +665,7 @@ l[3]</pre>
 
 <pre >## [1] 2+0i</pre>
 
-<p>Moral: <code>[</code> to return a list, <code>[[</code> to get a component.</p>
+<p>Moral: <code>[</code> to return a list with restricted components, <code>[[</code> to get a component.</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -693,7 +703,7 @@ l</pre>
 
 </article></slide><slide class=''><hgroup><h2>Lists as return values</h2></hgroup><article  id="lists-as-return-values">
 
-<p>Lists are workhorse in R. They play the role of tuples and dictionaries in other languages. They are often used as the return values of functions, especially the statistical modeling functions. One place we say them earlier was in <code>strsplit</code>.</p>
+<p>Lists are a workhorse storage structure in R. They play the role of tuples and dictionaries in other languages. They are often used as the return values of functions, especially the statistical modeling functions. One place we saw them earlier was in a usage of <code>strsplit</code>.</p>
 
 <pre class = 'prettyprint lang-r'>qwerty &lt;- &quot;the quick brown fox jumped over the lazy dog&quot;
 lincoln &lt;- &quot;four square and seven years ago&quot;
@@ -705,6 +715,8 @@ strsplit(c(qwerty, lincoln), &quot; &quot;)</pre>
 ## 
 ## [[2]]
 ## [1] &quot;four&quot;   &quot;square&quot; &quot;and&quot;    &quot;seven&quot;  &quot;years&quot;  &quot;ago&quot;</pre>
+
+<p>(each phrase is split as a component of the list)</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -782,7 +794,7 @@ str(m)</pre>
 <p>Okay, a vector is a natural way to store a <em>univariate</em> data set. What about a <em>multivariate</em> data set? Our scenario:</p>
 
 <blockquote>
-<p>For serveral different cases we record values for \(n\) different variables:</p>
+<p>For several different cases we record values for \(n\) different variables:</p>
 </blockquote>
 
 <table class = 'rmdtable'>
@@ -818,7 +830,7 @@ str(m)</pre>
 </tr>
 </table>
 
-<p>We have variables Role, Gender and IQ which are not homogeneous.</p>
+<p>We have variables <code>Role</code>, <code>Gender</code> and <code>IQ</code> which are not homogeneous.</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -827,11 +839,21 @@ str(m)</pre>
 <pre class = 'prettyprint lang-r'>role &lt;- c(&quot;husband&quot;, &quot;wife&quot;, &quot;son&quot;, &quot;daughter&quot;)
 gender &lt;- c(&quot;male&quot;, &quot;female&quot;, &quot;male&quot;, &quot;female&quot;)
 IQ &lt;- c(100, 110, 120, 160)
-l &lt;- list(role=role, gender=gender, IQ=IQ) # add names</pre>
+l &lt;- list(role=role, gender=gender, IQ=IQ) # add names
+l</pre>
+
+<pre >## $role
+## [1] &quot;husband&quot;  &quot;wife&quot;     &quot;son&quot;      &quot;daughter&quot;
+## 
+## $gender
+## [1] &quot;male&quot;   &quot;female&quot; &quot;male&quot;   &quot;female&quot;
+## 
+## $IQ
+## [1] 100 110 120 160</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>But lists lose some of the information. In this case, the vectors in the list are all of the same length, as there is one measurement per case. Hence a table is appropriate. We could try to put them into a matrix:</p>
+<p>But lists mask some of the information. In this case, the vectors in the list are all of the same length, as there is one measurement per case. Hence a table is appropriate. We could try to put them into a matrix:</p>
 
 <pre class = 'prettyprint lang-r'>matrix(c(role, gender, IQ), nrow=4)</pre>
 
@@ -868,7 +890,7 @@ simpsons</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>We can set the row names with <code>rownames</code>:</p>
+<p>We can set the row names with the <code>rownames</code> function:</p>
 
 <pre class = 'prettyprint lang-r'>rownames(simpsons) &lt;- c(&quot;Homer&quot;, &quot;Marge&quot;, &quot;Bart&quot;, &quot;Lisa&quot;)
 simpsons</pre>
@@ -907,7 +929,7 @@ simpsons[&quot;IQ&quot;]</pre>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
-<p>This is used quite often when indexing by logical vectors:</p>
+<p>Indexing by logical values is a common idiom:</p>
 
 <pre >simpsons[simpsons$IQ &gt;= 120, ]</pre>
 
@@ -931,9 +953,9 @@ head(wl, n=3)   # first 3 rows</pre>
 
 <pre >stringsAsFactors = default.stringsAsFactors()</pre>
 
-<p>The default is generally <code>TRUE</code>. It can be set to <code>FALSE</code> to suppress this.</p>
+<p>The default is generally <code>TRUE</code>. It can be set to <code>FALSE</code> to suppress this, as in</p>
 
-</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+<p>``` f &lt;- &quot;<a href='http://wiener.math.csi.cuny.edu/verzani/tmp/weightlift.csv' title=''>http://wiener.math.csi.cuny.edu/verzani/tmp/weightlift.csv</a>&quot; wl &lt;- read.csv(f, skip=1, stringsAsFactors=FALSE)<br/>&#8212;-</p>
 
 <p>After the fact, conversion can happen. For example by reassigning:</p>
 
@@ -958,7 +980,7 @@ simpsons[1,1] &lt;- &quot;Comedic bufoon&quot;  ## error, not a level</pre>
 
 <pre class = 'prettyprint lang-r'>var &lt;- (2 * wl$snatch + wl$clean_jerk) / wl$w.class</pre>
 
-<p>There is something tedious of having to reference the variable within the data frames, as it requires three times writing <code>wl$</code>.</p>
+<p>There is something tedious about having to reference the variable within the data frames, as it requires three times writing <code>wl$</code>.</p>
 
 </article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
 
@@ -970,6 +992,14 @@ simpsons[1,1] &lt;- &quot;Comedic bufoon&quot;  ## error, not a level</pre>
 </ul>
 
 <pre class = 'prettyprint lang-r'>var &lt;- with(wl, (2*snatch + clean_jerk) / w.class)</pre>
+
+<ul>
+<li>some R functions take advantage of R&#39;s quirky evaluation semantics (<code>subset</code>, &#8230;)</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>tibble</h2></hgroup><article  id="tibble">
+
+<p>For large data frames, a modern replacement is the <code>tibble</code> that is found in the <code>dplyr</code> package, to be described later. Tibbles have a few advantages &#8211; no default coercion of strings to factors, better printing, more predictable subsetting (no dropping dimensions, no partial matching).</p>
 
 </article></slide><slide class=''><hgroup><h2>Other data structures</h2></hgroup><article  id="other-data-structures">
 

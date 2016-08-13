@@ -118,92 +118,16 @@ $(document).ready(function () {
 </div>
 
 
-<div id="questions" class="section level1">
-<h1>Questions</h1>
-<div id="getting-started" class="section level2">
-<h2>Getting started</h2>
+<p>Files or a class.</p>
+<p>These are Rmd files turned into HTML slides through RStudio. To read the HTML online, follow these links:</p>
 <ul>
-<li><p>install R and RStudio</p></li>
-<li><p>install the packages <code>dplyr</code>, <code>lubridate</code>, <code>jsonlite</code></p></li>
-<li><p>load the <code>lubridate</code> package</p></li>
-<li><p>Read the manual page for <code>tibble</code>: (<code>?tibble</code>)</p></li>
-<li><p>read the package vignette for <code>lubridate</code>: (<code>vignette(&quot;lubridate&quot;)</code>)</p></li>
+<li><a href="http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/introduction.html">Introduction</a></li>
+<li><a href="http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/datatypes.html">Data Types</a></li>
+<li><a href="http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/containers.html">Data Containers</a></li>
+<li><a href="http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/manipulating-containers.html">Data Manipulations</a></li>
+<li><a href="http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/Functions/functions.html">Functions</a></li>
 </ul>
-</div>
-<div id="data-types" class="section level2">
-<h2>Data Types</h2>
-<ul>
-<li><p>Does R make a distinction between <code>1</code>, <code>1.0</code> and <code>1 + 0i</code>?</p></li>
-<li><p>for the built-in <code>rivers</code> data set, how many are greater than 1000? How many are between 100 and 200?</p></li>
-<li><p>run this command: <code>parse_date_time(&quot;2016-02-29&quot;, &quot;ymd&quot;)</code>. Can you tell what it does? Is 2016 a leap year? Is 2017? Is 2100?</p></li>
-<li><p>Can you figure out how many seconds there are in a day (without multiplying <code>60*60*24</code>)?</p></li>
-<li><p>can you add logical values? If so, how do they turn into numbers?</p></li>
-<li><p>can you multiply boolean values? That is, does something like this make sense <code>x * (x &gt; 0)</code> and if so, what does it do?</p></li>
-<li><p>Guess the output of this command: <code>TRUE == 1</code>, Were you right?</p></li>
-<li><p>DeMorgan’s law says something about the relationship of operations using boolean values. By experimenting, can you verify if “not (A or B)” is (not A) or (not B)? You experiment by looking at combinations of either <code>!(TRUE | FALSE)</code> versus things like (!TRUE) | (!FALSE), say. (<code>|</code> is not, <code>|</code> is “or” and <code>&amp;</code> is “and”)</p></li>
-<li><p>Make <code>x</code> and <code>y</code> with different lengths, says <code>x&lt;-c(1,2,3)</code> and <code>y&lt;-c(1,2,3,4)</code>. Can you add the two? Multiply? If so, explain how it seems to work</p></li>
-</ul>
-</div>
-<div id="containers" class="section level2">
-<h2>Containers</h2>
-<ul>
-<li><p>The built in data sets <code>rivers</code>, <code>state77</code>, and <code>mtcars</code> are what type of container?</p></li>
-<li><p>For any vectors, are there names? What is the length? What it the class</p></li>
-<li><p>for matrices, are there row names, column names? What is the dimension</p></li>
-<li><p>for data frames, are there row names? column names, the dimension</p></li>
-<li><p>Load the <code>MASS</code> package (a builtin). We consider the <code>Cars93</code> data set. It is a data frame.</p></li>
-<li><p>what are the variable names?</p></li>
-<li><p>What kind of variable is the one counting the number of cylinders?</p></li>
-<li><p>how many “cases” are there?</p></li>
-<li><p>are the cases labeled with row names or some other way?</p></li>
-<li><p>One of the variables is for highway mileage. What is the greatest value? smallest value? (<code>maximum</code>, <code>minimum</code>), what is the average value? the “middle” values (<code>mean</code>, <code>median</code>). What is the variability? (<code>IQR</code> or <code>sd</code> measure this)</p></li>
-<li><p>Again with the <code>Cars93</code> data set from the <code>MASS</code> package…</p></li>
-<li><p>for the <code>Cars93</code> data set, what is the average horsepower for the cars with highway mileage better than 25? Lower than 15?</p></li>
-<li><p>for the <code>Cars93</code> data set, what is the largest price difference between minimum and maximum price? Smallest?</p></li>
-<li><p>For the <code>Cars93</code> data set, what are the top 3 cases for highway mileage per potential passengers? (If a car carries 10 people and gets 20 MPG, then the answer is 2 for that car)</p></li>
-<li><p>How many cases in the data set have <code>USA</code> as the origin? How many are non-USA?</p></li>
-<li><p>Is the heaviest car also the car with the worst gas mileage (HWY)? What about lightest car, is it the best mileage?</p></li>
-<li><p>On average do front-wheel cars get better mileage than rear wheel cars, based on this data?</p></li>
-<li><p>If we think of cars as rectangles (<code>Length</code> and <code>Width</code>) having a certain density (let’s say area over <code>Weight</code>), what cars are most dense here? Least dense?</p></li>
-<li><p>A phone list has names, numbers and addresses for many different people. Explain how you might store this in R</p></li>
-<li><p>A shopping list has items to buy along with quantities. Explain how you might store this in R</p></li>
-<li><p>Recall a reduction takes some summary of an object <code>x</code> that has lower dimension. For a vector, this would be, say, a single numeric summary. Are the function <code>mean</code>, <code>sd</code>, <code>length</code> reductions?</p></li>
-<li><p>Run this command <code>out &lt;- hist(rivers)</code>. If we hadn’t saved the output, a graphic would be produced. Instead a list is assigned to <code>out</code>. What are the components? Could this list have been a data frame instead? The attribute <code>class</code> controls how this item is displayed, what class is this list? Does that mean <code>out</code> is not a list? (Use <code>is.list(out)</code> to ask.)</p></li>
-<li><p>make two small vectors <code>x&lt;-c(1,2,3)</code>, <code>y&lt;-c(4,5,6)</code>. What is <code>c(x,y)</code>? A vector of numbers? A vector of two vectors? If not the latter, how might you make that type of object?</p></li>
-</ul>
-</div>
-<div id="working-with-containers" class="section level2">
-<h2>Working with containers</h2>
-<ul>
-<li><p>Load the <code>nycflights13</code> package. (You may need to install it), and we will consider the <code>flights</code> data set.</p></li>
-<li>create a data set of just the <code>UA</code> flights. How many are there?</li>
-<li>for the <code>UA</code> flights, how many were from <code>EWR</code></li>
-<li><p>For <code>UA</code> flights from <code>EWR</code> can you tell which month had the most flights?</p></li>
-<li><p>For the <code>flights</code> data set</p></li>
-<li>which plane (tail number) had the longest flight?</li>
-<li>which plane (tail number) flew the most flights? most miles?</li>
-<li><p>which plane had the most flights in one day?</p></li>
-<li><p>For the <code>flights</code> data set,</p></li>
-<li>what was the busiest airport? busiest airline?</li>
-<li>At <code>EWR</code> was the busiest airline the same as at <code>JFK</code>.</li>
-<li><p>Can you find the busiest airline for each airport?</p></li>
-<li><p>For the <code>flights</code> data set, a histogram of delay times can be generated by <code>hist(flights$arr_delay)</code>. Creating histogram by carrier can be of more interest. How might that be done given the tools we’ve talked about? How might you want that to have been done? (Boxplots can be produced by <code>boxplot(arr_delay ~ carrier, flights)</code>.)</p></li>
-</ul>
-</div>
-<div id="functions" class="section level2">
-<h2>Functions</h2>
-<p>XXX work on these</p>
-<ul>
-<li><p>XXX write a function to make a request for …</p></li>
-<li><p>time series plots…</p></li>
-<li><p>list possible values for a variable</p></li>
-<li><p>percentage closed</p></li>
-<li><p>time to close distribution</p></li>
-<li><p>In your neighborhood, what is the most common complaint historically? In the past year?</p></li>
-</ul>
-<hr />
-</div>
-</div>
+<p>Some questions on this material are here: <a href="http://htmlpreview.github.io/?https://github.com/jverzani/RSquareEdge/blob/master/questions.html">Questions</a></p>
 
 
 
